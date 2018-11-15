@@ -20,5 +20,5 @@ from core import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
-    path('view_temp/', views.view_temp)
+    path('cadastradecisores/<projeto_id>/', views.cadastradecisores, name='cadastradecisores')
 ]

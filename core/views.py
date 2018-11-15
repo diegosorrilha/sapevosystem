@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from core.forms import DecisorForm, ProjetoForm, NomeProjetoForm
-from core.models import Projeto
+from core.models import Projeto, Decisor
 
 
 def index(request):
@@ -20,9 +20,9 @@ def index(request):
     if request.method == "POST":
         nome_projeto_form = NomeProjetoForm(request.POST)
         if nome_projeto_form.is_valid():
-            nome_projeto_form.save()
+            projeto_novo = nome_projeto_form.save()
 
-        return HttpResponseRedirect('/view_temp/')
+        return redirect('cadastradecisores', projeto_id=projeto_novo.id)
 
     else:
         nome_projeto_form = NomeProjetoForm()
@@ -30,61 +30,32 @@ def index(request):
     return render(request, template_name, {'nome_projeto_form': nome_projeto_form})
 
 
-def view_temp(request):
-    print('entrou na view temp')
-    template_name = 'index.html'
+def cadastradecisores(request, projeto_id):
+    projeto = Projeto.objects.get(id=projeto_id)
+    template_name = 'cadastra_decisores.html'
+    projeto_nome = projeto.nome
+    decisores = Decisor.objects.all()
 
-    dados = Projeto.objects.all()
+    if request.method == 'POST':
+        decisor_form = DecisorForm(request.POST)
+        if decisor_form.is_valid():
+            decisor_novo = decisor_form.save()
 
-    return render(request, template_name, {'dados': dados})
+            _inclui_decisor_no_projeto(projeto, decisor_novo)
 
+            # return redirect('cadastra_alternativas', variavel)
 
+    else:
+        decisor_form = DecisorForm()
 
-
-def cadastra_decisores(request):
-    template_name = 'index.html'
-    projeto_form = ProjetoForm(request.POST)
-        
-    return render(request, template_name, {'projeto_form': projeto_form,})
-
-
-def atualiza_projeto_com_decisores(request):
-    pass
-
-
-def cadastra_alternativas(request):
-    pass
+    return render(request, template_name, {
+                'decisor_form': decisor_form, 
+                'decisores': decisores, 
+                'projeto_nome': projeto_nome})
 
 
-def cadastra_criterios(request):
-    pass
+def _inclui_decisor_no_projeto(projeto, decisor):
+    projeto.decisores.add(decisor)
+    return
 
 
-def cadastra_peso(request):
-    pass
-
-
-def avalia_criterios(request):
-    pass
-
-# multiplos forms
-# form = MyFormClass(prefix='some_prefix')
-# and then, as long as the prefix is the same, process data as:
-
-# form = MyFormClass(request.POST, prefix='some_prefix')
-
-
-# >>> novo = Decisor(nome='Diego')
-# >>> novo.save()
-# >>> novo_2 = Decisor(nome='Luiz')
-# >>> novo_2.save()
-# >>> pp = Projeto(nome='eita nois', dono=novo)
-# >>> pp.save()
-# >>> pp.decisores.add(novo, novo_2)
-# >>> ps = Projeto.objects.all()
-# >>> for i in ps[2].decisores.all():
-# ...     print(i.nome)
-# ...
-# Diego
-# Luiz
-# >>>

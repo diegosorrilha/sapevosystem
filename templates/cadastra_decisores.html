@@ -7,11 +7,22 @@
     <title>HOME</title>
 </head>
 <body>
-    <h1>Cadastrar Projeto</h1>
+    <h1>Cadastrar Decisor | Projeto {{projeto_nome}}</h1>
     <form method="post">
         {% csrf_token %}
-        {{nome_projeto_form}}
+        {{decisor_form}}
         <input type="submit" value="Cadastrar">
-    </form>    
+        <button>Acabei</button>
+    </form>
+
+    {% if decisores %}
+    <ul>
+        {% for decisor in decisores %}
+            <li>{{decisor.nome}}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    
 </body>
 </html>
