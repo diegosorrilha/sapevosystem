@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HOME</title>
+</head>
+<body>
+    <!-- <form method="post">
+        {% csrf_token %}
+        <legend>Projeto:</legend>
+        <div class="username">
+            <label for="nome_projeto">Nome</label>
+            <input type="text" id="nome_projeto" name="nome_projeto" required minlength="3" maxlength="16" placeholder="" />
+        </div>
+        <input type="submit" value="Cadastrar">
+    </form>
+
+    <hr> -->
+
+    <form method="post">
+        {% csrf_token %}
+        {{nome_projeto_form}}
+        <input type="submit" value="Submit">
+    </form>
+    
+    
+
+    {% if dados %}
+        {{ dados }}
+    {% endif %}
+
+    <!-- <form method="post">
+        {% csrf_token %}
+        {{ decisor_form }}
+        {{ projeto_form }}
+        <input type="submit" value="Submit"> -->
+    </form>
+    
+</body>
+</html>
