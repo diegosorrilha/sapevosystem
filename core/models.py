@@ -9,7 +9,6 @@ class Decisor(models.Model):
 
 class Projeto(models.Model):
     nome = models.CharField(max_length=20)
-    dono = models.ForeignKey('Decisor', on_delete=models.CASCADE, default=1)
     decisores = models.ManyToManyField('Decisor', related_name='+')
     # resultado_avaliacao = models.CharField(max_length=20)
 

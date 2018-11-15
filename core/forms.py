@@ -16,4 +16,4 @@ class DecisorForm(forms.ModelForm):
 class ProjetoForm(forms.ModelForm):
     class Meta:
         model = Projeto
-        fields = ('nome', 'dono', 'decisores')
+        fields = ('nome', 'decisores')
