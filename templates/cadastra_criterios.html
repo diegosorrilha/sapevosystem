@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HOME</title>
+</head>
+<body>
+    <h1>Cadastrar Critérios | Projeto {{projeto_nome}}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{criterio_form}}
+        <input type="submit" value="Cadastrar">
+        <button>Acabei</button>
+    </form>
+
+    {% if criterios %}
+    <ul>
+        {% for criterio in criterios %}
+            <li>{{criterio.nome}}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    
+</body>
+</html>

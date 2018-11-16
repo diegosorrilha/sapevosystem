@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
     path('cadastradecisores/<projeto_id>/', views.cadastradecisores, name='cadastradecisores'),
-    path('cadastraalternativas/<projeto_id>/', views.cadastraalternativas, name='cadastraalternativas')
+    path('cadastraalternativas/<projeto_id>/', views.cadastraalternativas, name='cadastraalternativas'),
+    path('cadastracriterios/<projeto_id>/', views.cadastracriterios, name='cadastracriterios')
 ]

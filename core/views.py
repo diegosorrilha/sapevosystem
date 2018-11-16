@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm
-from core.models import Projeto, Decisor, Alternativa
+from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm
+from core.models import Projeto, Decisor, Alternativa, Criterio
 
 # aux functions
 def _inclui_decisor_no_projeto(projeto, decisor):
@@ -71,6 +71,8 @@ def cadastraalternativas(request, projeto_id):
             alternativa_nova.projeto = projeto
             alternativa_nova.save()
 
+        return redirect('cadastracriterios', projeto_id=projeto_id)
+
     else:
         alternativa_form = AlternativaForm()
 
@@ -78,4 +80,27 @@ def cadastraalternativas(request, projeto_id):
                 'alternativa_form': alternativa_form,
                 'alternativas': alternativas,
                 'projeto_nome': projeto_nome})
+
+
+def cadastracriterios(request, projeto_id):
+    projeto = Projeto.objects.get(id=projeto_id)
+    template_name = 'cadastra_criterios.html'
+    projeto_nome = projeto.nome
+    criterios = Criterio.objects.filter(projeto=projeto_id)
+
+    if request.method == 'POST':
+        criterio_form = CriterioForm(request.POST)
+        if criterio_form.is_valid():
+            criterio_novo = criterio_form.save()
+            criterio_novo.projeto = projeto
+            criterio_novo.save()
+    
+    else:
+        criterio_form = CriterioForm()
+
+    return render(request, template_name, {
+                'criterio_form': criterio_form,
+                'criterios': criterios,
+                'projeto_nome': projeto_nome,
+    })
 

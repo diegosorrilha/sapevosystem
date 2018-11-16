@@ -23,3 +23,9 @@ class AlternativaForm(forms.ModelForm):
     class Meta:
         model = Alternativa
         fields = ('nome',)
+
+
+class CriterioForm(forms.ModelForm):
+    class Meta:
+        model = Criterio
+        fields = ('nome',)
