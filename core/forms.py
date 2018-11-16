@@ -17,3 +17,9 @@ class ProjetoForm(forms.ModelForm):
     class Meta:
         model = Projeto
         fields = ('nome', 'decisores')
+
+
+class AlternativaForm(forms.ModelForm):
+    class Meta:
+        model = Alternativa
+        fields = ('nome',)

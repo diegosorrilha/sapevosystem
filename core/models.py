@@ -17,18 +17,21 @@ class Projeto(models.Model):
 
 
 class Alternativa(models.Model):
-    projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE)
-    titulo = models.TextField()
+    projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE, null=True)
+    nome = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.nome
 
 
 class Criterio(models.Model):
     projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE)
-    titulo = models.TextField()
+    titulo = models.CharField(max_length=20)
 
 
 class Peso(models.Model):
-    codigo = models.TextField()
-    description = models.TextField()
+    codigo = models.CharField(max_length=20)
+    description = models.CharField(max_length=20)
     valor = models.IntegerField()
 
 

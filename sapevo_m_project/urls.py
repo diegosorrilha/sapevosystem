@@ -20,5 +20,6 @@ from core import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
-    path('cadastradecisores/<projeto_id>/', views.cadastradecisores, name='cadastradecisores')
+    path('cadastradecisores/<projeto_id>/', views.cadastradecisores, name='cadastradecisores'),
+    path('cadastraalternativas/<projeto_id>/', views.cadastraalternativas, name='cadastraalternativas')
 ]
