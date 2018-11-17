@@ -1,26 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>HOME</title>
-</head>
-<body>
-    <h1>Cadastrar Decisor | Projeto {{projeto_nome}}</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{decisor_form}}
-        <input type="submit" value="Cadastrar">
-        <a href="{% url 'cadastraalternativas' projeto_id %}">Finalizar</a>
-    </form>
+{% extends "base.html" %}
+{% block container %}
 
-    {% if decisores %}
-    <ul>
+<h1>Projeto {{projeto_nome}}</h1>
+<hr>
+<h2>Cadastrar Decisor</h2>
+
+<br>
+
+<form method="post">
+    {% csrf_token %}
+    {{decisor_form}}
+    <input type="submit" class="btn btn-outline-primary" value="Cadastrar">
+    <a href="{% url 'cadastraalternativas' projeto_id %}" class="btn btn-outline-success">Finalizar</a>
+</form>
+
+<br>
+
+{% if decisores %}
+
+<table class="table table-striped" style="width: 70%; margin:0 auto">
+    <thead>
+        <tr>
+        <th scope="col">#</th>
+        <th scope="col">Decisor</th>
+        </tr>
+    </thead>
+    <tbody>
         {% for decisor in decisores %}
-            <li>{{decisor.nome}}</li>
+            <tr>
+                <th scope="row">{{decisor.id}}</th>
+                <td>{{decisor.nome}}</td>
+        
+            </tr>
         {% endfor %}
-    </ul>
-    {% endif %}
-</body>
-</html>
+    </tbody>
+</table>
+
+{% endif %}
+
+{% endblock %}

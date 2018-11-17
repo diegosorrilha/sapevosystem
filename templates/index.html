@@ -1,17 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>HOME</title>
-</head>
-<body>
-    <h1>Cadastrar Projeto</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{nome_projeto_form}}
-        <input type="submit" value="Cadastrar">
-    </form>    
-</body>
-</html>
+{% extends "base.html" %}
+{% block container %}
+
+<h1>Cadastrar Projeto</h1>
+
+<br>
+
+<form method="post">
+    {% csrf_token %}
+    {{nome_projeto_form}}
+    <input type="submit" value="Cadastrar">
+</form>
+
+{% endblock %}

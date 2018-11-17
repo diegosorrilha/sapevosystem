@@ -1,28 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>HOME</title>
-</head>
-<body>
-    <h1>Cadastrar Alternativas | Projeto {{projeto_nome}}</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{alternativa_form}}
-        <input type="submit" value="Cadastrar">
-        <a href="{% url 'cadastracriterios' projeto_id %}">Finalizar</a>
-    </form>
 
-    {% if alternativas %}
-    <ul>
+{% extends "base.html" %}
+{% block container %}
+
+<h1>Projeto {{projeto_nome}}</h1>
+<hr>
+<h2>Cadastrar Alternativas</h2>
+
+<br>
+
+<form method="post">
+    {% csrf_token %}
+    {{alternativa_form}}
+    <input type="submit" class="btn btn-outline-primary" value="Cadastrar">
+    <a href="{% url 'cadastracriterios' projeto_id %}" class="btn btn-outline-success">Finalizar</a>
+</form>
+
+<br>
+
+{% if alternativas %}
+
+<table class="table table-striped" style="width: 70%; margin:0 auto">
+    <thead>
+        <tr>
+        <th scope="col">#</th>
+        <th scope="col">Alternativa</th>
+        </tr>
+    </thead>
+    <tbody>
         {% for alternativa in alternativas %}
-            <li>{{alternativa.nome}}</li>
+            <tr>
+                <th scope="row">{{alternativa.id}}</th>
+                <td>{{alternativa.nome}}</td>
+        
+            </tr>
         {% endfor %}
-    </ul>
-    {% endif %}
+    </tbody>
+</table>
 
-    
-</body>
-</html>
+{% endif %}
+
+{% endblock %}
