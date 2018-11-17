@@ -12,7 +12,7 @@
         {% csrf_token %}
         {{alternativa_form}}
         <input type="submit" value="Cadastrar">
-        <button>Acabei</button>
+        <a href="{% url 'cadastracriterios' projeto_id %}">Finalizar</a>
     </form>
 
     {% if alternativas %}

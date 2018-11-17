@@ -49,8 +49,6 @@ def cadastradecisores(request, projeto_id):
             decisor_novo.projeto = projeto
             decisor_novo.save()
 
-        # return redirect('cadastraalternativas', projeto_id=projeto_id)
-
     else:
         decisor_form = DecisorForm()
 
@@ -74,15 +72,14 @@ def cadastraalternativas(request, projeto_id):
             alternativa_nova.projeto = projeto
             alternativa_nova.save()
 
-        return redirect('cadastracriterios', projeto_id=projeto_id)
-
     else:
         alternativa_form = AlternativaForm()
 
     return render(request, template_name, {
                 'alternativa_form': alternativa_form,
                 'alternativas': alternativas,
-                'projeto_nome': projeto_nome})
+                'projeto_nome': projeto_nome,
+                'projeto_id': projeto_id})
 
 
 def cadastracriterios(request, projeto_id):
