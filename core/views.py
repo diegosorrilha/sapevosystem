@@ -14,8 +14,8 @@ def index(request):
     1 - cadastrar somente nome do projeto e redirecionar para cadastrar decisores - OK
     2 - cadastrar decisores - OK
     3 - atualizar cadastro do projeto com decisores - OK
-    4 - cadastra Alternativas
-    5 - cadastra Criterios
+    4 - cadastra Alternativas - OK
+    5 - cadastra Criterios - OK
     6 - cadastra Peso
     7 - avalia Critérios
     8 - coloca resultado final da avaliação no projeto
@@ -39,13 +39,15 @@ def cadastradecisores(request, projeto_id):
     projeto = Projeto.objects.get(id=projeto_id)
     template_name = 'cadastra_decisores.html'
     projeto_nome = projeto.nome
-    decisores = Decisor.objects.all()
+    decisores = Decisor.objects.filter(projeto=projeto_id)
 
     if request.method == 'POST':
         decisor_form = DecisorForm(request.POST)
         if decisor_form.is_valid():
             decisor_novo = decisor_form.save()
             _inclui_decisor_no_projeto(projeto, decisor_novo)
+            decisor_novo.projeto = projeto
+            decisor_novo.save()
 
         return redirect('cadastraalternativas', projeto_id=projeto_id)
 
@@ -103,4 +105,3 @@ def cadastracriterios(request, projeto_id):
                 'criterios': criterios,
                 'projeto_nome': projeto_nome,
     })
-
