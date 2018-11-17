@@ -63,4 +63,3 @@ class Avaliacao(models.Model):
     alternativa = models.ForeignKey('Alternativa', on_delete=models.CASCADE)
     criterio = models.ForeignKey('Criterio', on_delete=models.CASCADE)
     peso = models.CharField(max_length=5, choices=AVALIACAO_CHOICES, default=AM)
-

@@ -49,7 +49,7 @@ def cadastradecisores(request, projeto_id):
             decisor_novo.projeto = projeto
             decisor_novo.save()
 
-        return redirect('cadastraalternativas', projeto_id=projeto_id)
+        # return redirect('cadastraalternativas', projeto_id=projeto_id)
 
     else:
         decisor_form = DecisorForm()
@@ -57,7 +57,8 @@ def cadastradecisores(request, projeto_id):
     return render(request, template_name, {
                 'decisor_form': decisor_form, 
                 'decisores': decisores, 
-                'projeto_nome': projeto_nome})
+                'projeto_nome': projeto_nome,
+                'projeto_id': projeto_id})
 
 
 def cadastraalternativas(request, projeto_id):
@@ -116,4 +117,3 @@ def avaliacao(request):
         print(request.POST)
 
     return render(request, template_name, {'form':form})
-    

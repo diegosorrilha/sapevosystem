@@ -12,7 +12,7 @@
         {% csrf_token %}
         {{decisor_form}}
         <input type="submit" value="Cadastrar">
-        <button>Acabei</button>
+        <a href="{% url 'cadastraalternativas' projeto_id %}">Finalizar</a>
     </form>
 
     {% if decisores %}
@@ -22,7 +22,5 @@
         {% endfor %}
     </ul>
     {% endif %}
-
-    
 </body>
 </html>
