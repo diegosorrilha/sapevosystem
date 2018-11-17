@@ -21,6 +21,7 @@ def index(request):
     8 - coloca resultado final da avaliação no projeto
     """
     template_name = 'index.html'
+    projetos = Projeto.objects.all()
 
     if request.method == "POST":
         nome_projeto_form = NomeProjetoForm(request.POST)
@@ -32,7 +33,24 @@ def index(request):
     else:
         nome_projeto_form = NomeProjetoForm()
 
-    return render(request, template_name, {'nome_projeto_form': nome_projeto_form})
+    return render(request, template_name, {
+                'nome_projeto_form': nome_projeto_form,
+                'projetos': projetos})
+
+
+def projeto(request, projeto_id):
+    template_name = 'projeto.html'
+    projeto = Projeto.objects.get(id=projeto_id)
+    decisores = Decisor.objects.filter(projeto=projeto_id)
+    alternativas = Alternativa.objects.filter(projeto=projeto_id)
+    criterios = Criterio.objects.filter(projeto=projeto_id)
+
+
+    return render(request, template_name, {
+                'projeto': projeto,
+                'decisores': decisores,
+                'alternativas': alternativas,
+                'criterios': criterios})
 
 
 def cadastradecisores(request, projeto_id):

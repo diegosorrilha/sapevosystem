@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block container %}
+
+<h1>Projeto {{projeto.nome}}</h1>
+
+<hr>
+
+{% if decisores %}
+<div>
+    <h2>Decisores</h2>
+
+    <table class="table table-striped" style="width: 70%; margin:0 auto">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Decisore</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for decisore in decisores %}
+                <tr>
+                    <th scope="row">{{decisore.id}}</th>
+                    <td>{{decisore.nome}}</td>
+            
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<br>
+
+{% if alternativas %}
+<div>
+    <h2>Alternativas</h2>
+
+    <table class="table table-striped" style="width: 70%; margin:0 auto">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Alternativa</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alternativa in alternativas %}
+                <tr>
+                    <th scope="row">{{alternativa.id}}</th>
+                    <td>{{alternativa.nome}}</td>
+            
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<br>
+
+{% if criterios %}
+<div>
+    <h2>Criterios</h2>
+
+    <table class="table table-striped" style="width: 70%; margin:0 auto">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Criterio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for criterio in criterios %}
+                <tr>
+                    <th scope="row">{{criterio.id}}</th>
+                    <td>{{criterio.nome}}</td>
+            
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% endblock %}
