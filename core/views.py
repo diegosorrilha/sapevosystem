@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm
+from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm, AvaliacaoForm
 from core.models import Projeto, Decisor, Alternativa, Criterio
 
 # aux functions
@@ -105,3 +105,15 @@ def cadastracriterios(request, projeto_id):
                 'criterios': criterios,
                 'projeto_nome': projeto_nome,
     })
+
+
+def avaliacao(request):
+    template_name = 'avaliacao.html'
+
+    form = AvaliacaoForm()
+
+    if request.method == 'POST':
+        print(request.POST)
+
+    return render(request, template_name, {'form':form})
+    

@@ -29,3 +29,9 @@ class CriterioForm(forms.ModelForm):
     class Meta:
         model = Criterio
         fields = ('nome',)
+
+
+class AvaliacaoForm(forms.ModelForm):
+    class Meta:
+        model = Avaliacao
+        fields = ('peso',)

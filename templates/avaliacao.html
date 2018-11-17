@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HOME</title>
+</head>
+<body>
+    <h1>Avaliação | Projeto {{projeto_nome}}</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+
+        {% for choice in form.peso.field.choices %}
+            <input type="radio" name="avaliacao" value="{{choice.0}}"
+                  {% ifequal form.my_choice_field.data choice.0 %} 
+                     checked="checked"
+                  {% endifequal %}/>
+            <label for="">{{choice.1}}</label>
+
+        {% endfor %}
+        
+        <input type="submit" value="Cadastrar">
+        <button>Acabei</button>
+    </form>
+
+
+    
+</body>
+</html>
