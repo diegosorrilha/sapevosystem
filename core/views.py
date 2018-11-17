@@ -64,7 +64,7 @@ def cadastraalternativas(request, projeto_id):
     projeto = Projeto.objects.get(id=projeto_id)
     template_name = 'cadastra_alternativas.html'
     projeto_nome = projeto.nome
-    alternativas = Alternativa.objects.all()
+    alternativas = Alternativa.objects.filter(projeto=projeto_id)
 
     if request.method == 'POST':
         alternativa_form = AlternativaForm(request.POST)
