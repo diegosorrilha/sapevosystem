@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm
-from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios
+from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios, AvaliacaoAlternativa
 
 # aux functions
 def _inclui_decisor_no_projeto(projeto, decisor):
@@ -142,8 +142,7 @@ def avaliarcriterios(request, projeto_id):
     criterios_id = Criterio.objects.filter(projeto=projeto_id).values_list('id', flat=True)
 
     if not decisores:
-        return redirect('https://www.google.com/search?q=avaliar_alternativas')
-        # return redirect('avaliaralternativas', projeto_id)
+        return redirect('avaliaralternativas', projeto_id)
 
     combinacoes_criterios = _gerar_combinacoes_criterios(criterios_id)
 
@@ -194,23 +193,17 @@ def avaliarcriterios(request, projeto_id):
         # avaliacao_criterios = []
      
 
-# def avaliaralternativas(request, projeto_id):
 def avaliaralternativas(request, projeto_id):
-    '''
-    - alterar view para receber o projeto_id via redirect
-    - alter url para receber o projeto_id via url
-    '''
     template_name = 'avaliar_alternativas.html'
-    # projeto_id = projeto_id
-    projeto_id = '1'
+    projeto_id = projeto_id
     projeto = Projeto.objects.get(id=projeto_id)
     decisores = list(Decisor.objects.filter(projeto=projeto_id, avaliou_alternativas=False).values_list('id', 'nome'))
     alternativas_id = Alternativa.objects.filter(projeto=projeto_id).values_list('id', flat=True)
     criterios = Criterio.objects.filter(projeto=projeto_id)
-    print(alternativas_id)
 
     if not decisores:
         return redirect('https://www.google.com/search?q=avaliar_alternativas')
+        # return redirect('projeto', projeto_id)
 
     combinacoes_alternativas = _gerar_combinacoes_criterios(alternativas_id)
 
@@ -228,9 +221,20 @@ def avaliaralternativas(request, projeto_id):
         campos = request.POST.keys()
         decisor = Decisor.objects.get(id=decisor_id)
 
-        print('========')
-        print(request.POST)
-        print('========')
+        for campo in campos:
+            if campo.startswith('c') and not campo.startswith('csrf'):
+                print('{} => {}'.format(campo, request.POST[campo]))
+                criterio_id = campo[1]
+                criterio = Criterio.objects.get(id=criterio_id)
+
+                avaliacao = AvaliacaoAlternativa(
+                    projeto=projeto,
+                    decisor=decisor,
+                    criterio=criterio,
+                    alternativas=campo,
+                    valor=request.POST[campo],
+                )
+                avaliacao.save()
 
         decisor.avaliou_alternativas = True
         decisor.save()
@@ -249,14 +253,15 @@ def avaliaralternativas(request, projeto_id):
     ex.: 3 criterios e 3 alternativas cadatrados
     c1a1a2  |  c1a1a3  |  c1a2a3
     c2a1a2  |  c2a1a3  |  c2a2a3
-    c3a1a2  |  c3a1a3  |  c3a2a3    
+    c3a1a2  |  c3a1a3  |  c3a2a3
     '''
 
     # grava no banco 
         # tabela avaliação_alternativas
         # projeto = projeto_id        ||  Carros   ||  Carros
+        # decisor = decisor_id        ||  Diego    ||  Zenon
         # criterio = criterio_id      ||  c1       ||  c1
-        # alternativas = alternativas ||  a1a2     ||  a1a2
+        # alternativas = alternativas ||  a1a2     ||  a1a3
         # valor = 3                   ||  3        ||  2
         
         # avaliacao_alternativas = AvaliacaoAlternativas.objects.filter(projeto=projeto_id)

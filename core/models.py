@@ -49,3 +49,14 @@ class AvaliacaoCriterios(models.Model):
 
     def __str__(self):
         return f'{self.decisor} - {self.criterios}'
+
+
+class AvaliacaoAlternativa(models.Model):
+    projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE)
+    decisor = models.ForeignKey('Decisor', on_delete=models.CASCADE)
+    criterio = models.ForeignKey('Criterio', on_delete=models.CASCADE)
+    alternativas = models.CharField(max_length=20)
+    valor = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.decisor} - {self.criterio} - {self.alternativas}'
