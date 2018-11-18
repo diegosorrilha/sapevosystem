@@ -138,9 +138,7 @@ def avaliarcriterios(request, projeto_id):
     ''' 
     # template_name = 'avaliacao.html'
     template_name = 'avaliacao_temp.html'
-    # projeto_id = '1'
     projeto_id = projeto_id
-    # decisores = list(Decisor.objects.filter(projeto=projeto_id).values_list('id', 'nome'))
     decisores = list(Decisor.objects.filter(projeto=projeto_id, avaliou_criterios=False).values_list('id', 'nome'))
     criterios_id = Criterio.objects.filter(projeto=projeto_id).values_list('id', flat=True)
 
@@ -149,7 +147,6 @@ def avaliarcriterios(request, projeto_id):
 
     combinacoes_criterios = _gerar_combinacoes_criterios(criterios_id)
 
-    # virar uma funcao?
     criterios_combinados = []
     for i in combinacoes_criterios:
         nome_criterio1 = Criterio.objects.get(id=i[0]).nome
@@ -161,7 +158,6 @@ def avaliarcriterios(request, projeto_id):
 
     if request.method == 'POST':
         print(request.POST)
-        # atualizo o decisor com True (avaliou)
         decisor_id = request.POST['decisor_id']
         decisor = Decisor.objects.get(id=decisor_id)
         decisor.avaliou_criterios = True
@@ -183,7 +179,7 @@ def avaliarcriterios(request, projeto_id):
         # print(f'd{decisor1.id}{criterios}')
     
 
-# def avaliar_criterios(request, projeto_id, decisor):
+# def avaliaralternativas(request, projeto_id):
 
 
 
