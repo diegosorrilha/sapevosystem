@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm, AvaliacaoForm, AvaliacaoTempForm
-from core.models import Projeto, Decisor, Alternativa, Criterio
+from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm
+from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios
 
 # aux functions
 def _inclui_decisor_no_projeto(projeto, decisor):
@@ -16,8 +16,8 @@ def index(request):
     3 - atualizar cadastro do projeto com decisores - OK
     4 - cadastra Alternativas - OK
     5 - cadastra Criterios - OK
-    6 - cadastra Peso
-    7 - avalia Critérios
+    6 - avalia Critérios - OK
+    7 - avalia Alternativas
     8 - coloca resultado final da avaliação no projeto
     """
     template_name = 'index.html'
@@ -125,9 +125,8 @@ def cadastracriterios(request, projeto_id):
 
 
 def avaliarcriterios(request, projeto_id):
-    # mudar nome para avaliarcriterios
     '''
-    - avaliar criterios (cada decisor)
+    - avaliar criterios (cada decisor) - OK
     - avaliar alternativas (cada decisor) ==> outra view
     - normalizar para gerar lista de pesos
     - calcular peso final
@@ -136,14 +135,16 @@ def avaliarcriterios(request, projeto_id):
     - 
     
     ''' 
-    # template_name = 'avaliacao.html'
+    # template_name = 'avaliar_criterios.html'
     template_name = 'avaliacao_temp.html'
     projeto_id = projeto_id
+    projeto = Projeto.objects.get(id=projeto_id)
     decisores = list(Decisor.objects.filter(projeto=projeto_id, avaliou_criterios=False).values_list('id', 'nome'))
     criterios_id = Criterio.objects.filter(projeto=projeto_id).values_list('id', flat=True)
 
     if not decisores:
         return redirect('https://www.google.com/search?q=avaliar_alternativas')
+        # return redirect('avaliaralternativas', projeto_id)
 
     combinacoes_criterios = _gerar_combinacoes_criterios(criterios_id)
 
@@ -157,9 +158,21 @@ def avaliarcriterios(request, projeto_id):
         )
 
     if request.method == 'POST':
-        print(request.POST)
         decisor_id = request.POST['decisor_id']
+        campos = request.POST.keys()
         decisor = Decisor.objects.get(id=decisor_id)
+
+        for campo in campos:
+            if campo.startswith('c') and not campo.startswith('csrf'):
+                print('{} => {}'.format(campo, request.POST[campo]))
+                avaliacao = AvaliacaoCriterios(
+                    projeto=projeto,
+                    decisor=decisor,
+                    criterios=campo,
+                    valor=request.POST[campo]
+                )
+                avaliacao.save()
+
         decisor.avaliou_criterios = True
         decisor.save()
 
@@ -168,16 +181,19 @@ def avaliarcriterios(request, projeto_id):
     return render(request, template_name, {
                 'decisores': decisores,
                 'criterios_combinados': criterios_combinados,
+                'projeto_nome': projeto.nome,
                 })
 
         # grava no banco 
         # tabela avaliação_criterios
-        # projeto = projeto_id
-        # decisor = decisor.id
-        # criterios = criterios
-        # valor = 3
+        # projeto = projeto_id  ||  Carros   ||  Carros
+        # decisor = decisor.id  ||  Diego    ||  Zenon
+        # criterios = criterios ||  c1c2     ||  c1c2
+        # valor = 3             ||  3        ||  2
         # print(f'd{decisor1.id}{criterios}')
-    
+        # avaliacao_criterios = AvaliacaoCriterios.objects.filter(projeto=projeto_id)
+        # avaliacao_criterios = []
+     
 
 # def avaliaralternativas(request, projeto_id):
 
@@ -186,6 +202,7 @@ def avaliarcriterios(request, projeto_id):
 #### gerar combinacoes #####
 from itertools import product
 
+# mudar para _gerar_combinacoes(criterios/alternativas)
 def _gerar_combinacoes_criterios(criterios):
     criterios_keys = criterios
     
@@ -206,4 +223,3 @@ def _gerar_combinacoes_criterios(criterios):
                 combinacoes.append(subset)
 
     return combinacoes
-#### gerar combinacoes

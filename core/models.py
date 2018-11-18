@@ -40,27 +40,11 @@ class Peso(models.Model):
     valor = models.IntegerField()
 
 
-class Avaliacao(models.Model):
-    AM = 3
-    MM = 2
-    M = 1
-    I = 0
-    P = -1
-    MP = -2
-    AP = -3
-
-    AVALIACAO_CHOICES = (
-        (AM, 'Absolutamente Melhor'),
-        (MM, 'Muito Melhor'),
-        (M, 'Melhor'),
-        (I, 'Igual / Equivalente'),
-        (P, 'Pior'),
-        (MP, 'Muito Pior'),
-        (AM, 'Absolutamente Pior'),
-    )
-
+class AvaliacaoCriterios(models.Model):
     projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE)
     decisor = models.ForeignKey('Decisor', on_delete=models.CASCADE)
-    alternativa = models.ForeignKey('Alternativa', on_delete=models.CASCADE)
-    criterio = models.ForeignKey('Criterio', on_delete=models.CASCADE)
-    peso = models.CharField(max_length=5, choices=AVALIACAO_CHOICES, default=AM)
+    criterios = models.CharField(max_length=20)
+    valor = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.decisor} - {self.criterios}'
