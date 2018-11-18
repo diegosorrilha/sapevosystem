@@ -135,8 +135,7 @@ def avaliarcriterios(request, projeto_id):
     - 
     
     ''' 
-    # template_name = 'avaliar_criterios.html'
-    template_name = 'avaliacao_temp.html'
+    template_name = 'avaliar_criterios.html'
     projeto_id = projeto_id
     projeto = Projeto.objects.get(id=projeto_id)
     decisores = list(Decisor.objects.filter(projeto=projeto_id, avaliou_criterios=False).values_list('id', 'nome'))
