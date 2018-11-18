@@ -120,14 +120,15 @@ def cadastracriterios(request, projeto_id):
                 'criterio_form': criterio_form,
                 'criterios': criterios,
                 'projeto_nome': projeto_nome,
+                'projeto_id': projeto_id,
     })
 
 
-def avaliacao(request):
+def avaliarcriterios(request, projeto_id):
     # mudar nome para avaliarcriterios
     '''
     - avaliar criterios (cada decisor)
-    - avaliar alternativas (cada decisor)
+    - avaliar alternativas (cada decisor) ==> outra view
     - normalizar para gerar lista de pesos
     - calcular peso final
     - normalizar alternativas
@@ -135,19 +136,16 @@ def avaliacao(request):
     - 
     
     ''' 
-    
-    # pegar somente decisores que não avaliaram criterios
-    # colocar num select e pediu para pessoa escolher qual ela quer
-    # avaliar criterios
-    # redirecionar para mesmo view
-    # se não tiver mais decisores para avaliar redireciona para avaliar alternativas
-
     # template_name = 'avaliacao.html'
     template_name = 'avaliacao_temp.html'
-    projeto_id = '1' # pegar dinamicamente
+    # projeto_id = '1'
+    projeto_id = projeto_id
     # decisores = list(Decisor.objects.filter(projeto=projeto_id).values_list('id', 'nome'))
     decisores = list(Decisor.objects.filter(projeto=projeto_id, avaliou_criterios=False).values_list('id', 'nome'))
     criterios_id = Criterio.objects.filter(projeto=projeto_id).values_list('id', flat=True)
+
+    if not decisores:
+        return redirect('https://www.google.com/search?q=avaliar_alternativas')
 
     combinacoes_criterios = _gerar_combinacoes_criterios(criterios_id)
 
@@ -162,15 +160,19 @@ def avaliacao(request):
         )
 
     if request.method == 'POST':
-        print(request.POST)        
+        print(request.POST)
+        # atualizo o decisor com True (avaliou)
+        decisor_id = request.POST['decisor_id']
+        decisor = Decisor.objects.get(id=decisor_id)
+        decisor.avaliou_criterios = True
+        decisor.save()
 
-    else: 
-        avaliacao_form = AvaliacaoTempForm()
+        return redirect('avaliarcriterios', projeto_id)
 
     return render(request, template_name, {
                 'decisores': decisores,
                 'criterios_combinados': criterios_combinados,
-                'avaliacao_form': avaliacao_form})
+                })
 
         # grava no banco 
         # tabela avaliação_criterios
