@@ -48,7 +48,7 @@ class AvaliacaoCriterios(models.Model):
     valor = models.IntegerField()
 
     def __str__(self):
-        return f'{self.decisor} - {self.criterios}'
+        return '{} - {}'.format(self.decisor, self.criterios)
 
 
 class AvaliacaoAlternativa(models.Model):
@@ -59,4 +59,4 @@ class AvaliacaoAlternativa(models.Model):
     valor = models.IntegerField()
 
     def __str__(self):
-        return f'{self.decisor} - {self.criterio} - {self.alternativas}'
+        return '{} - {} - {}'.format(self.decisor, self.criterio, self.alternativas)
