@@ -202,8 +202,7 @@ def avaliaralternativas(request, projeto_id):
     criterios = Criterio.objects.filter(projeto=projeto_id)
 
     if not decisores:
-        return redirect('https://www.google.com/search?q=avaliar_alternativas')
-        # return redirect('projeto', projeto_id)
+        return redirect('resultado', projeto_id)
 
     combinacoes_alternativas = _gerar_combinacoes_criterios(alternativas_id)
 
@@ -266,6 +265,16 @@ def avaliaralternativas(request, projeto_id):
         
         # avaliacao_alternativas = AvaliacaoAlternativas.objects.filter(projeto=projeto_id)
         # avaliacao_alternativas = []
+
+
+def resultado(request, projeto_id):
+    template_name = 'resultado.html'
+    projeto_id = projeto_id
+    projeto = Projeto.objects.get(id=projeto_id)
+
+    return render(request, template_name, {
+                'projeto_nome': projeto.nome,
+                })
 
 
 #### gerar combinacoes #####
