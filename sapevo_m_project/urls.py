@@ -24,5 +24,6 @@ urlpatterns = [
     path('cadastradecisores/<projeto_id>/', views.cadastradecisores, name='cadastradecisores'),
     path('cadastraalternativas/<projeto_id>/', views.cadastraalternativas, name='cadastraalternativas'),
     path('cadastracriterios/<projeto_id>/', views.cadastracriterios, name='cadastracriterios'),
-    path('avaliarcriterios/<projeto_id>/', views.avaliarcriterios, name='avaliarcriterios')
+    path('avaliarcriterios/<projeto_id>/', views.avaliarcriterios, name='avaliarcriterios'),
+    path('avaliaralternativas/<projeto_id>/', views.avaliaralternativas, name='avaliaralternativas'),
 ]

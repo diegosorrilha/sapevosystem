@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block container %}
+
+    <h1>Projeto {{projeto_nome}}</h1>
+    <hr>
+    <h2>Avaliar Alternativas</h2>
+
+    <br>
+
+    {% for criterio in criterios %}
+        {{criterio.nome}} - {{criterio.id}}
+        <br>
+        {% for alternativas in alternativas_combinadas %}
+            {{alternativas.0}} VS {{alternativas.1}} (a{{alternativas.2}}a{{alternativas.3}})
+            <br>
+        {% endfor %}
+    <br>
+    <br>
+    {% endfor %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label for="id_decisor_id">Qual é o decisor?</label>
+        <select name="decisor_id" id="id_decisor_id">
+            {% for decisor in decisores %}
+                <option value="{{decisor.0}}">{{decisor.1}}</option>
+            {% endfor %}
+        </select>    
+
+        <br>
+        <br>
+        <div id="alternativas">
+        {% for alternativas in alternativas_combinadas %}
+            
+            <strong>{{alternativas.0}} VS {{alternativas.1}} (a{{alternativas.2}}a{{alternativas.3}})</strong>
+            <br>
+            <input style="margin-left: 1em" type="radio" name="a{{alternativas.2}}a{{alternativas.3}}" value=-3> Absolutamente Pior
+            <input style="margin-left: 1em" type="radio" name="a{{alternativas.2}}a{{alternativas.3}}" value=-2> Muito Pior
+            <input style="margin-left: 1em" type="radio" name="a{{alternativas.2}}a{{alternativas.3}}" value=-1> Pior
+            <input style="margin-left: 1em" type="radio" name="a{{alternativas.2}}a{{alternativas.3}}" value=0> Equivalente
+            <input style="margin-left: 1em" type="radio" name="a{{alternativas.2}}a{{alternativas.3}}" value=1> Melhor
+            <input style="margin-left: 1em" type="radio" name="a{{alternativas.2}}a{{alternativas.3}}" value=2> Muito melhor
+            <input style="margin-left: 1em" type="radio" name="a{{alternativas.2}}a{{alternativas.3}}" value=3> Absolu. melhor
+            <br>
+            <br>
+        {% endfor %}
+        </div>  
+        <hr>
+
+        <input type="submit" class="btn btn-outline-primary" value="Avaliar">
+    </form>
+    
+{% endblock %}

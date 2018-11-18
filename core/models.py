@@ -4,6 +4,7 @@ class Decisor(models.Model):
     projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE, null=True)
     nome = models.CharField(max_length=20)
     avaliou_criterios = models.BooleanField(default=False)
+    avaliou_alternativas = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nome

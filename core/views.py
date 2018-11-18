@@ -195,7 +195,72 @@ def avaliarcriterios(request, projeto_id):
      
 
 # def avaliaralternativas(request, projeto_id):
+def avaliaralternativas(request, projeto_id):
+    '''
+    - alterar view para receber o projeto_id via redirect
+    - alter url para receber o projeto_id via url
+    '''
+    template_name = 'avaliar_alternativas.html'
+    # projeto_id = projeto_id
+    projeto_id = '1'
+    projeto = Projeto.objects.get(id=projeto_id)
+    decisores = list(Decisor.objects.filter(projeto=projeto_id, avaliou_alternativas=False).values_list('id', 'nome'))
+    alternativas_id = Alternativa.objects.filter(projeto=projeto_id).values_list('id', flat=True)
+    criterios = Criterio.objects.filter(projeto=projeto_id)
+    print(alternativas_id)
 
+    if not decisores:
+        return redirect('https://www.google.com/search?q=avaliar_alternativas')
+
+    combinacoes_alternativas = _gerar_combinacoes_criterios(alternativas_id)
+
+    alternativas_combinadas = []
+    for i in combinacoes_alternativas:
+        nome_alternativa1 = Alternativa.objects.get(id=i[0]).nome
+        nome_alternativa2 = Alternativa.objects.get(id=i[1]).nome
+
+        alternativas_combinadas.append(
+            (nome_alternativa1, nome_alternativa2, i[0], i[1])
+        )
+
+    if request.method == 'POST':
+        decisor_id = request.POST['decisor_id']
+        campos = request.POST.keys()
+        decisor = Decisor.objects.get(id=decisor_id)
+
+        print('========')
+        print(request.POST)
+        print('========')
+
+        decisor.avaliou_alternativas = True
+        decisor.save()
+
+        return redirect('avaliaralternativas', projeto_id)
+
+    return render(request, template_name, {
+                'decisores': decisores,
+                'alternativas_combinadas': alternativas_combinadas,
+                'criterios': criterios,
+                'projeto_nome': projeto.nome,
+                })
+
+    '''
+    para cada criterio cadastrado avalia 2 alternativas
+    ex.: 3 criterios e 3 alternativas cadatrados
+    c1a1a2  |  c1a1a3  |  c1a2a3
+    c2a1a2  |  c2a1a3  |  c2a2a3
+    c3a1a2  |  c3a1a3  |  c3a2a3    
+    '''
+
+    # grava no banco 
+        # tabela avaliação_alternativas
+        # projeto = projeto_id        ||  Carros   ||  Carros
+        # criterio = criterio_id      ||  c1       ||  c1
+        # alternativas = alternativas ||  a1a2     ||  a1a2
+        # valor = 3                   ||  3        ||  2
+        
+        # avaliacao_alternativas = AvaliacaoAlternativas.objects.filter(projeto=projeto_id)
+        # avaliacao_alternativas = []
 
 
 #### gerar combinacoes #####
