@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HOME</title>
+</head>
+<body>
+    <h1>Avaliação</h1>
+
+    <form method="post">
+        {% csrf_token %}
+
+        Decisor:
+        <select>
+            {% for decisor in decisores %}
+                <option value="{{decisor.0}}">{{decisor.1}}</option>
+            {% endfor %}
+
+        </select>    
+
+        <br>
+            <br>
+            
+            {% for criterios in criterios_combinados %}
+                <!-- {{criterios}} -->
+                {{criterios.0}} VS {{criterios.1}} (c{{criterios.2}}c{{criterios.3}})
+                <br>
+                <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=-3> Absolutamente Pior
+                <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=-2> Muito Pior
+                <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=-1> Pior
+                <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=1> Melhor
+                <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=0> equivalente
+                <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=2> Muito melhor
+                <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=3> Absolu. melhor
+                <br>
+                <br>
+            {% endfor %}
+
+            <hr>
+
+
+        <input type="submit" value="Avaliar">
+        <button>Acabei</button>
+    </form>
+
+    <hr>
+
+    
+
+
+    
+</body>
+</html>

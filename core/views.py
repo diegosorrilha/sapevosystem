@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm, AvaliacaoForm
+from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm, AvaliacaoForm, AvaliacaoTempForm
 from core.models import Projeto, Decisor, Alternativa, Criterio
 
 # aux functions
@@ -124,11 +124,88 @@ def cadastracriterios(request, projeto_id):
 
 
 def avaliacao(request):
-    template_name = 'avaliacao.html'
+    # mudar nome para avaliarcriterios
+    '''
+    - avaliar criterios (cada decisor)
+    - avaliar alternativas (cada decisor)
+    - normalizar para gerar lista de pesos
+    - calcular peso final
+    - normalizar alternativas
+    - somar alternativa por criterio
+    - 
+    
+    ''' 
+    
+    # pegar somente decisores que não avaliaram criterios
+    # colocar num select e pediu para pessoa escolher qual ela quer
+    # avaliar criterios
+    # redirecionar para mesmo view
+    # se não tiver mais decisores para avaliar redireciona para avaliar alternativas
 
-    form = AvaliacaoForm()
+    # template_name = 'avaliacao.html'
+    template_name = 'avaliacao_temp.html'
+    projeto_id = '1' # pegar dinamicamente
+    # decisores = list(Decisor.objects.filter(projeto=projeto_id).values_list('id', 'nome'))
+    decisores = list(Decisor.objects.filter(projeto=projeto_id, avaliou_criterios=False).values_list('id', 'nome'))
+    criterios_id = Criterio.objects.filter(projeto=projeto_id).values_list('id', flat=True)
+
+    combinacoes_criterios = _gerar_combinacoes_criterios(criterios_id)
+
+    # virar uma funcao?
+    criterios_combinados = []
+    for i in combinacoes_criterios:
+        nome_criterio1 = Criterio.objects.get(id=i[0]).nome
+        nome_criterio2 = Criterio.objects.get(id=i[1]).nome
+
+        criterios_combinados.append(
+            (nome_criterio1, nome_criterio2, i[0], i[1])
+        )
 
     if request.method == 'POST':
-        print(request.POST)
+        print(request.POST)        
 
-    return render(request, template_name, {'form':form})
+    else: 
+        avaliacao_form = AvaliacaoTempForm()
+
+    return render(request, template_name, {
+                'decisores': decisores,
+                'criterios_combinados': criterios_combinados,
+                'avaliacao_form': avaliacao_form})
+
+        # grava no banco 
+        # tabela avaliação_criterios
+        # projeto = projeto_id
+        # decisor = decisor.id
+        # criterios = criterios
+        # valor = 3
+        # print(f'd{decisor1.id}{criterios}')
+    
+
+# def avaliar_criterios(request, projeto_id, decisor):
+
+
+
+#### gerar combinacoes #####
+from itertools import product
+
+def _gerar_combinacoes_criterios(criterios):
+    criterios_keys = criterios
+    
+    # criterios_keys = criterios.keys()
+    # criterios_keys = ['c1', 'c2', 'c3', 'c4']
+
+    # permsList = []
+    genComb = product(criterios_keys, repeat=2)
+
+    combinacoes = []
+    for subset in genComb:
+        l = list(subset)
+        l.reverse()
+        subset_reversed = tuple(l)
+
+        if not subset[0] == subset[1]:
+            if subset not in combinacoes  and subset_reversed not in combinacoes:
+                combinacoes.append(subset)
+
+    return combinacoes
+#### gerar combinacoes
