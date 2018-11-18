@@ -9,73 +9,37 @@
 
     <form method="post">
         {% csrf_token %}
-    
-        <tr>
-            <th><label for="id_decisor_id">Qual é o decisor?</label></th>
-            <td>
-                <select name="decisor_id" id="id_decisor_id">
-                    {% for decisor in decisores %}
-                        <option value="{{decisor.0}}">{{decisor.1}}</option>
-                    {% endfor %}
-                </select>
-            </td>
-        </tr>
 
-        <tr>
-            <th><label for="id_favorite_color_0"></label></th>
-            <td>
-                <ul id="id_favorite_color">
+        <label for="id_decisor_id">Qual é o decisor?</label>
+        <select name="decisor_id" id="id_decisor_id">
+            {% for decisor in decisores %}
+                <option value="{{decisor.0}}">{{decisor.1}}</option>
+            {% endfor %}
+        </select>    
 
-                    {% for criterios in criterios_combinados %}
-                    <!-- {{criterios}} -->
-                    {{criterios.0}} VS {{criterios.1}} (c{{criterios.2}}c{{criterios.3}})
-                    <br>
-
-                    <li>
-                        <label for="id_criterios{{criterios.2}}{{criterios.3}}">
-                            <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" required id="id_criterios{{criterios.2}}{{criterios.3}}" value=-3> Absolutamente Pior
-                        </label>
-                    </li>
-
-                    <li>
-                        <label for="id_criterios{{criterios.2}}{{criterios.3}}">
-                            <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" required id="id_criterios{{criterios.2}}{{criterios.3}}" value=-2> Muito Pior
-                        </label>
-                    </li>
-
-                    <li>
-                        <label for="id_criterios{{criterios.2}}{{criterios.3}}">
-                            <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" required id="id_criterios{{criterios.2}}{{criterios.3}}" value=-1> Pior
-                        </label>
-                    </li>
-
-                    <li>
-                        <label for="id_criterios{{criterios.2}}{{criterios.3}}">
-                            <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" required id="id_criterios{{criterios.2}}{{criterios.3}}" value=0> equivalente
-                        </label>
-                    </li>
-
-                    <li>
-                        <label for="id_criterios{{criterios.2}}{{criterios.3}}">
-                            <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" required id="id_criterios{{criterios.2}}{{criterios.3}}" value=2> Muito melhor
-                        </label>
-                    </li>
-
-                    <li>
-                        <label for="id_criterios{{criterios.2}}{{criterios.3}}">
-                            <input type="radio" name="c{{criterios.2}}c{{criterios.3}}" required id="id_criterios{{criterios.2}}{{criterios.3}}" value=3> Absolu. melhor
-                        </label>
-                    </li>
+        <br>
+        <br>
+        <div id="criterios">
+        {% for criterios in criterios_combinados %}
+            <!-- {{criterios}} -->
+            <strong>{{criterios.0}} VS {{criterios.1}} (c{{criterios.2}}c{{criterios.3}})</strong>
+            <br>
+            <input style="margin-left: 1em" type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=-3> Absolutamente Pior
+            <input style="margin-left: 1em" type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=-2> Muito Pior
+            <input style="margin-left: 1em" type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=-1> Pior
+            <input style="margin-left: 1em" type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=0> Equivalente
+            <input style="margin-left: 1em" type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=1> Melhor
+            <input style="margin-left: 1em" type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=2> Muito melhor
+            <input style="margin-left: 1em" type="radio" name="c{{criterios.2}}c{{criterios.3}}" value=3> Absolu. melhor
+            <br>
+            <br>
+        {% endfor %}
+        </div>  
+        <hr>
 
 
-                    <br>
-                    <br>
-                    {% endfor %}     
-            </td>
-        </tr>
         <input type="submit" value="Avaliar">
         <button>Acabei</button>
-
     </form>
     
 {% endblock %}
