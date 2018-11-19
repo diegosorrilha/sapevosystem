@@ -10,9 +10,11 @@
 <hr>
 
 {% for i in resultado %}
-
-    {{i}} <br>
-
+    {% for j in i %}
+        {{j}}
+        <br>
+    {% endfor %}
+    <hr>
 {%  endfor %}
 
 <hr>

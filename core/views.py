@@ -281,10 +281,6 @@ def _normalizar(lista_elementos):
 
 
 def resultado(request, projeto_id):
-    template_name = 'resultado.html'
-    projeto_id = projeto_id
-    projeto = Projeto.objects.get(id=projeto_id)
-
     '''
     projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE)
     decisor = models.ForeignKey('Decisor', on_delete=models.CASCADE)
@@ -292,18 +288,23 @@ def resultado(request, projeto_id):
     valor = models.IntegerField()
     '''
 
-    # calcula o peso para o decisor 1
-    
-    # TODO: deixar generico para pegar todos os decisores
-    criterios_decisor_1 = AvaliacaoCriterios.objects.filter(decisor=1)
+    template_name = 'resultado.html'
+    projeto_id = projeto_id
+    projeto = Projeto.objects.get(id=projeto_id)
     qtd_criterios = Criterio.objects.filter(projeto=projeto_id).count()
-    
-    #fazer um for para criar essas matrizes para cada decisor
-    matriz = _gerar_matriz(qtd_criterios, criterios_decisor_1)
+    decisores = projeto.decisores.all()
+
+    matrizes = []
+    for decisor in decisores:
+        criterios_decisor_1 = AvaliacaoCriterios.objects.filter(decisor=decisor.id)
+        matriz = _gerar_matriz(qtd_criterios, criterios_decisor_1)
+        matrizes.append(matriz)
+
+        print(matriz)
     
     return render(request, template_name, {
         'projeto_nome': projeto.nome,
-        'resultado': matriz,
+        'resultado': matrizes,
         })
 
 
