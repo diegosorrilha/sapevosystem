@@ -162,7 +162,6 @@ def avaliarcriterios(request, projeto_id):
 
         for campo in campos:
             if campo.startswith('c') and not campo.startswith('csrf'):
-                print('{} => {}'.format(campo, request.POST[campo]))
                 avaliacao = AvaliacaoCriterios(
                     projeto=projeto,
                     decisor=decisor,
@@ -222,7 +221,6 @@ def avaliaralternativas(request, projeto_id):
 
         for campo in campos:
             if campo.startswith('c') and not campo.startswith('csrf'):
-                print('{} => {}'.format(campo, request.POST[campo]))
                 criterio_id = campo[1]
                 criterio = Criterio.objects.get(id=criterio_id)
 
@@ -359,16 +357,12 @@ def _completa_matriz_com_positivos(matriz, dic, qtd_criterios):
 
 def _completa_matriz_com_negativos(matriz_n, dic, qtd_criterios, criterios_decisor):
     criterios = {k:v for (v, k) in enumerate(dic.keys())}
-    print(criterios)
 
     for i in criterios_decisor:
-        print(i.criterios, i.valor)
         k=i.criterios[-2:]
         indice = criterios[k]
         el = i.valor * -1
         matriz_n[indice].insert(0, el)
-
-        print('valor', el)
 
     return matriz_n
 
