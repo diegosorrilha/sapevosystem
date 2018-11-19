@@ -3,11 +3,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm
 from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios, AvaliacaoAlternativa
 
-# aux functions
-def _inclui_decisor_no_projeto(projeto, decisor):
-    projeto.decisores.add(decisor)
-    return
-
 
 def index(request):
     """ 
@@ -265,41 +260,6 @@ def avaliaralternativas(request, projeto_id):
         # avaliacao_alternativas = []
 
 
-def _normalizar(lista_elementos):
-    lista_final_normalizada = []
-    lista_dos_somados = []
-    lista_normalizada = []
-    lista_sem_zero = []
-    for elemento in lista_elementos:
-        soma = sum(elemento)
-        lista_dos_somados.append(soma)
-    
-    for elemento_da_soma in lista_dos_somados:
-        maior , menor = max(lista_dos_somados), min(lista_dos_somados)
-        if maior == menor:
-            regular = 0
-        else:
-            regular = ((elemento_da_soma - menor)/(maior - menor))
-        lista_normalizada.append(regular)
-    
-    for i in lista_normalizada:
-        if i > 0:
-            lista_sem_zero.append(i)
-
-    for elemento_normalizado in lista_normalizada:
-        if elemento_normalizado > 0:
-            lista_final_normalizada.append(elemento_normalizado)
-        else:
-            menor_zero = min(lista_sem_zero)
-            lista_final_normalizada.append(menor_zero*0.01)
-
-    return lista_final_normalizada
-
-
-
-
-
-
 def resultado(request, projeto_id):
     '''
     projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE)
@@ -326,13 +286,10 @@ def resultado(request, projeto_id):
         peso_matriz = _normalizar(matriz)
         pesos_decisores.append(peso_matriz)
 
-    for i in pesos_decisores:
-        print(i)
+    # calcular o peso final 
+    peso_final = _peso_criterios(pesos_decisores)
 
-
-    # peso_deciso2 = normalizar(matriz_d_2)
-
-     #peso_final = peso_criterios(peso_deciso1, peso_deciso2)
+    print(peso_final)
 
 
 
@@ -341,6 +298,12 @@ def resultado(request, projeto_id):
         'projeto_nome': projeto.nome,
         'resultado': matrizes,
         })
+
+######## aux functions   ########
+
+def _inclui_decisor_no_projeto(projeto, decisor):
+    projeto.decisores.add(decisor)
+    return
 
 
 def _gerar_matriz(qtd_criterios, criterios_decisor):
@@ -402,6 +365,47 @@ def _completa_matriz_com_negativos(matriz_n, dic, qtd_criterios, criterios_decis
 
     return matriz_n
 
+
+def _normalizar(lista_elementos):
+    lista_final_normalizada = []
+    lista_dos_somados = []
+    lista_normalizada = []
+    lista_sem_zero = []
+    for elemento in lista_elementos:
+        soma = sum(elemento)
+        lista_dos_somados.append(soma)
+    
+    for elemento_da_soma in lista_dos_somados:
+        maior , menor = max(lista_dos_somados), min(lista_dos_somados)
+        if maior == menor:
+            regular = 0
+        else:
+            regular = ((elemento_da_soma - menor)/(maior - menor))
+        lista_normalizada.append(regular)
+    
+    for i in lista_normalizada:
+        if i > 0:
+            lista_sem_zero.append(i)
+
+    for elemento_normalizado in lista_normalizada:
+        if elemento_normalizado > 0:
+            lista_final_normalizada.append(elemento_normalizado)
+        else:
+            menor_zero = min(lista_sem_zero)
+            lista_final_normalizada.append(menor_zero*0.01)
+
+    return lista_final_normalizada
+
+
+def _peso_criterios(lista_elementos):
+    num_elementos = len(lista_elementos) -1
+    pesos = []
+    i = 0
+    while i <= num_elementos:
+        soma = sum([item[i] for item in lista_elementos])
+        i =  i + 1
+        pesos.append(soma)
+    return pesos
 
 
 #### gerar combinacoes #####
