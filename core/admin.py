@@ -8,6 +8,6 @@ admin.site.register(
         Alternativa, 
         Criterio, 
         AvaliacaoCriterios,
-        AvaliacaoAlternativa
+        AvaliacaoAlternativas,
     ]
 )

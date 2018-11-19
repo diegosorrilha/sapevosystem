@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm
-from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios, AvaliacaoAlternativa
+from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios, AvaliacaoAlternativas
 
 
 def index(request):
@@ -219,7 +219,7 @@ def avaliaralternativas(request, projeto_id):
                 criterio_id = campo[1]
                 criterio = Criterio.objects.get(id=criterio_id)
 
-                avaliacao = AvaliacaoAlternativa(
+                avaliacao = AvaliacaoAlternativas(
                     projeto=projeto,
                     decisor=decisor,
                     criterio=criterio,
@@ -289,11 +289,20 @@ def resultado(request, projeto_id):
     # calcular o peso final 
     peso_final = _peso_criterios(pesos_decisores)
 
-    print(peso_final)
-
     # gera matriz de alternativa para cada decisor
+    '''
+    projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE)
+    decisor = models.ForeignKey('Decisor', on_delete=models.CASCADE)
+    criterio = models.ForeignKey('Criterio', on_delete=models.CASCADE)
+    alternativas = models.CharField(max_length=20)
+    valor = models.IntegerField()
+    '''
+    
     # matriz_alternativa = AvaliacaoCriterios.objects.filter(projeto=projeto_id, decisor=decisor.id)
-    matriz_alternativa_1 = AvaliacaoCriterios.objects.filter(projeto=projeto_id, decisor=1)
+    matriz_alternativa_1 = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=1)
+    
+    for i in matriz_alternativa_1:
+        print(i.alternativas, i.valor)
 
 
     

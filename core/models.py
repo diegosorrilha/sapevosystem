@@ -51,7 +51,7 @@ class AvaliacaoCriterios(models.Model):
         return '{} - {}'.format(self.decisor, self.criterios)
 
 
-class AvaliacaoAlternativa(models.Model):
+class AvaliacaoAlternativas(models.Model):
     projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE)
     decisor = models.ForeignKey('Decisor', on_delete=models.CASCADE)
     criterio = models.ForeignKey('Criterio', on_delete=models.CASCADE)
