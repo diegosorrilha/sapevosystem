@@ -371,7 +371,7 @@ def _completa_matriz_com_negativos(matriz_n, dic, qtd_criterios, criterios_decis
         print(i.criterios, i.valor)
         k=i.criterios[-2:]
         indice = criterios[k]
-        el = '{}*-1'.format(i.valor)
+        el = i.valor * -1
         matriz_n[indice].insert(0, el)
 
         print('valor', el)
