@@ -298,15 +298,18 @@ def resultado(request, projeto_id):
     
     # TODO: deixar generico para pegar todos os decisores
     criterios_decisor_1 = AvaliacaoCriterios.objects.filter(decisor=1)
-    
-    # qtd_criterios = 4 # pegar todos os criterios cadastrados pelo projeto
     qtd_criterios = Criterio.objects.filter(projeto=projeto_id).count()
     
-    criterios_nome = [ i.criterios for i in criterios_decisor_1 ]
-    criterios = [ i.valor for i in criterios_decisor_1 ]
+    #fazer um for para criar essas matrizes para cada decisor
+    matriz = _gerar_matriz(qtd_criterios, criterios_decisor_1)
     
-    ### aqui começa a rodar para cada DECISOR
-    
+    return render(request, template_name, {
+        'projeto_nome': projeto.nome,
+        'resultado': matriz,
+        })
+
+
+def _gerar_matriz(qtd_criterios, criterios_decisor):
     ### 1 - gerar matriz base
     matriz_base = []
     for i in range(qtd_criterios):
@@ -331,7 +334,7 @@ def resultado(request, projeto_id):
         key = 'c{}'.format(i)
         dic_[key] = []
 
-    for i in criterios_decisor_1:
+    for i in criterios_decisor:
         k = i.criterios[:2]
         dic_[k].append(i.valor)
 
@@ -339,19 +342,12 @@ def resultado(request, projeto_id):
     matriz_com_positivos = _completa_matriz_com_positivos(matriz_base, dic_, qtd_criterios)
 
     ### 4 - gerar nova matriz com valores negativos antes do zero
-    matriz_final = _completa_matriz_com_negativos(matriz_com_positivos, dic_, qtd_criterios, criterios_decisor_1)
+    matriz_final = _completa_matriz_com_negativos(matriz_com_positivos, dic_, qtd_criterios, criterios_decisor)
 
-    resultado = matriz_final
-
-    return render(request, template_name, {
-        'projeto_nome': projeto.nome,
-        'resultado': resultado,
-        })
+    return matriz_final
 
 
 def _completa_matriz_com_positivos(matriz, dic, qtd_criterios):
-    # funcao para completar matriz com numeros positivos
-
     matriz_nova = []
     for i in matriz:
         l = []
@@ -361,13 +357,11 @@ def _completa_matriz_com_positivos(matriz, dic, qtd_criterios):
                 matriz_nova.append(l)
     return matriz_nova
 
-def _completa_matriz_com_negativos(matriz_n, dic, qtd_criterios, criterios_decisor_1):
-    print('funcao linda de deus')
-    
+def _completa_matriz_com_negativos(matriz_n, dic, qtd_criterios, criterios_decisor):
     criterios = {k:v for (v, k) in enumerate(dic.keys())}
     print(criterios)
 
-    for i in criterios_decisor_1:
+    for i in criterios_decisor:
         print(i.criterios, i.valor)
         k=i.criterios[-2:]
         indice = criterios[k]
