@@ -267,14 +267,198 @@ def avaliaralternativas(request, projeto_id):
         # avaliacao_alternativas = []
 
 
+
+
+
+
+def _normalizar(lista_elementos):
+    return "teste"
+
+
+
+
+
+
+
+
+
 def resultado(request, projeto_id):
     template_name = 'resultado.html'
     projeto_id = projeto_id
     projeto = Projeto.objects.get(id=projeto_id)
 
+    '''
+    projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE)
+    decisor = models.ForeignKey('Decisor', on_delete=models.CASCADE)
+    criterios = models.CharField(max_length=20)
+    valor = models.IntegerField()
+    '''
+
+
+    # calcula o peso para o decisor 1
+    # TODO: deixar generico para pegar todos os decisores
+    criterios_decisor_1 = AvaliacaoCriterios.objects.filter(decisor=1)
+    # qtd_criterios = 4 # pegar todos os criterios cadastrados pelo projeto
+    qtd_criterios = Criterio.objects.filter(projeto=projeto_id).count()
+
+
+
+    ###################### TESTES ################################################################# 
+    criterios = ['c1c2', 'c1c3', 'c1c4', 'c2c3', 'c2c4', 'c3c4']
+    criterios_neg = ['c1c2 *-1', 'c1c3 *-1', 'c1c4 *-1', 'c2c3 *-1', 'c2c4 *-1', 'c3c4 *-1']
+    matriz = [[0, 2, 3, 4], [1, 0, 3, 4], [1, 2, 0, 4], [1, 2, 3, 0]]
+    matriz = [[0], [1, 0], [1, 2, 0], [1, 2, 3, 0]]
+
+    # gerar matriz de acordo com numero de criterios
+    matriz = []
+    for i in range(qtd_criterios):
+        matriz.append(list(range(1,qtd_criterios+1)))
+
+    # posiciona o zero na matriz gerada
+    pos_zero = 1
+    for lista in matriz:
+        lista[pos_zero-1] = 0
+        pos_zero +=1
+
+    # remove os elementos após o 0
+    for lista in matriz:
+        zero_p = lista.index(0)
+        for i in lista[zero_p+1:]:
+            lista.remove(i)
+
+    # separa os criterios em um dicionario
+    dic_ = {}
+    for i in range(1,qtd_criterios+1):
+        key = 'c{}'.format(i)
+        dic_[key] = []
+    
+    for i in criterios:
+        k=i[:2]
+        dic_[k].append(i)
+
+    # for k in dic_.keys():
+    #     for i in criterios:
+    #         if i.startswith(k):
+    #             dic_[k].append(i)
+
+
+    # for i in dic_.values():
+    #     for j in matriz:
+    #         lista_nova.append(j+i)
+
+###################### TESTES #################################################################
+ 
+
+    resultado = criterios_decisor_1
+    criterios_nome = [ i.criterios for i in resultado ]
+    criterios = [ i.valor for i in resultado ]
+    
+    print('criterios_nome')
+    print(criterios_nome)
+    print('criterios_nome')
+    print(criterios)
+    print('\n--------\n')
+
+    ### aqui começa a rodar para cada DECISOR
+    ### 1 - gerar matriz base
+    matriz_base = []
+    for i in range(qtd_criterios):
+        matriz_base.append(list(range(1,qtd_criterios+1)))
+
+    print('matriz_base')
+    print(matriz_base)
+    print('\n--------\n')
+
+
+    ### 2 - posicionar zeros na matriz base
+    pos_zero = 1
+    for lista in matriz_base:
+        lista[pos_zero-1] = 0
+        pos_zero +=1
+
+    print('matriz_base com zeros')
+    print(matriz_base)
+    print('\n--------\n')
+
+    ### 3 - gerar nova matriz com valores positivos após o zero
+    # remove os elementos após o 0
+    for lista in matriz_base:
+        zero_p = lista.index(0)
+        for i in lista[zero_p+1:]:
+            lista.remove(i)
+
+    # separa os criterios em um dicionario
+    dic_ = {}
+    for i in range(1,qtd_criterios+1):
+        key = 'c{}'.format(i)
+        dic_[key] = []
+    
+    # for i in criterios_nome:
+    #     k=i[:2]
+    #     dic_[k].append(i)
+
+    for i in criterios_decisor_1:
+        k = i.criterios[:2]
+        dic_[k].append(i.valor)
+
+    
+    print('dicionario de criterios dic_')
+    print(dic_)
+    print('\n--------\n')
+
+    # complea a matriz com valores positivos
+    matriz_com_positivos = _completa_matriz_com_positivos(matriz_base, dic_, qtd_criterios)
+
+    print('matriz completa com positivos')
+    print(matriz_com_positivos)
+    print('\n--------\n')
+
+
+    # 6 - gerar nova matriz com valores negativos antes do zero
+    matriz_final = _completa_matriz_com_negativos(matriz_com_positivos, dic_, qtd_criterios, criterios_decisor_1)
+
+    print('matriz final com negativos')
+    print(matriz_final)
+    print('-----------------')
+    for i in matriz_final:
+        print(i)
+    print('\n--------\n')
+
     return render(request, template_name, {
-                'projeto_nome': projeto.nome,
-                })
+        'projeto_nome': projeto.nome,
+        'resultado': resultado,
+        })
+
+
+def _completa_matriz_com_positivos(matriz, dic, qtd_criterios):
+    # funcao para completar matriz com numeros positivos
+
+    matriz_nova = []
+    for i in matriz:
+        l = []
+        for j in dic.values():
+            if len(matriz_nova) < qtd_criterios:
+                l = i+j
+                matriz_nova.append(l)
+    return matriz_nova
+
+def _completa_matriz_com_negativos(matriz_n, dic, qtd_criterios, criterios_decisor_1):
+    print('funcao linda de deus')
+    
+    criterios = {k:v for (v, k) in enumerate(dic.keys())}
+    print(criterios)
+
+    for i in criterios_decisor_1:
+        print(i.criterios, i.valor)
+        k=i.criterios[-2:]
+        indice = criterios[k]
+        el = '{}*-1'.format(i.valor)
+        matriz_n[indice].insert(0, el)
+
+        print('valor', el)
+
+    return matriz_n
+
 
 
 #### gerar combinacoes #####

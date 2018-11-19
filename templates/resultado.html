@@ -3,6 +3,20 @@
 
 <h1>Resultado | Projeto {{projeto_nome}}</h1>
 <hr>
+<hr>
+
+{{resultado}}
+
+<hr>
+
+{% for i in resultado %}
+
+    {{i.decisor}} - {{i.criterios}} - {{i.valor}} <br>
+
+{%  endfor %}
+
+<hr>
+<hr>
 
 <h3>Pesos</h3>
 <p>Critério <strong>Conforto</strong> - 0.015</p>
