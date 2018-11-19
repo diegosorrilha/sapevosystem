@@ -392,10 +392,6 @@ def resultado(request, projeto_id):
     for i in range(1,qtd_criterios+1):
         key = 'c{}'.format(i)
         dic_[key] = []
-    
-    # for i in criterios_nome:
-    #     k=i[:2]
-    #     dic_[k].append(i)
 
     for i in criterios_decisor_1:
         k = i.criterios[:2]
@@ -423,6 +419,8 @@ def resultado(request, projeto_id):
     for i in matriz_final:
         print(i)
     print('\n--------\n')
+
+    resultado = matriz_final
 
     return render(request, template_name, {
         'projeto_nome': projeto.nome,
