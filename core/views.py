@@ -276,8 +276,8 @@ def resultado(request, projeto_id):
 
     matrizes = []
     for decisor in decisores:
-        criterios_decisor_1 = AvaliacaoCriterios.objects.filter(decisor=decisor.id)
-        matriz = _gerar_matriz(qtd_criterios, criterios_decisor_1)
+        criterios_decisor = AvaliacaoCriterios.objects.filter(decisor=decisor.id)
+        matriz = _gerar_matriz(qtd_criterios, criterios_decisor)
         matrizes.append(matriz)
 
     # calcular pesos dos decisores
@@ -289,7 +289,6 @@ def resultado(request, projeto_id):
     # calcular o peso final 
     peso_final = _peso_criterios(pesos_decisores)
 
-    print(peso_final)
 
 
 
