@@ -272,6 +272,7 @@ def resultado(request, projeto_id):
     projeto_id = projeto_id
     projeto = Projeto.objects.get(id=projeto_id)
     qtd_criterios = Criterio.objects.filter(projeto=projeto_id).count()
+    qtd_alternativas = Alternativa.objects.filter(projeto=projeto_id).count()
     decisores = projeto.decisores.all()
 
     matrizes = []
@@ -299,11 +300,26 @@ def resultado(request, projeto_id):
     '''
     
     # matriz_alternativa = AvaliacaoCriterios.objects.filter(projeto=projeto_id, decisor=decisor.id)
-    matriz_alternativa_1 = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=1)
+    # matriz_alternativa_1 = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=1)
     
-    for i in matriz_alternativa_1:
-        print(i.alternativas, i.valor)
 
+    matrizes_alt = {}
+    for decisor in decisores:
+        criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=1)
+        k = 'c{}'.format(criterios_decisor.values('criterio')[0]['criterio'])
+        matrizes_alt[k] = []
+    
+    
+    for decisor in decisores:
+        criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=1)
+        matriz = _gerar_matriz_alt(qtd_alternativas, criterios_decisor)
+        k = 'c{}'.format(criterios_decisor.values('criterio')[0]['criterio'])
+        matrizes_alt[k] = matriz
+
+    print('matrizes_alt', matrizes_alt)
+
+    for i in matrizes_alt:
+        print(i)
 
     
     return render(request, template_name, {
@@ -343,6 +359,9 @@ def _gerar_matriz(qtd_criterios, criterios_decisor):
         key = 'c{}'.format(i)
         dic_[key] = []
 
+    print(criterios_decisor)
+    print('au jeuss')
+
     for i in criterios_decisor:
         k = i.criterios[:2]
         dic_[k].append(i.valor)
@@ -352,6 +371,57 @@ def _gerar_matriz(qtd_criterios, criterios_decisor):
 
     ### 4 - gerar nova matriz com valores negativos antes do zero
     matriz_final = _completa_matriz_com_negativos(matriz_com_positivos, dic_, qtd_criterios, criterios_decisor)
+
+    return matriz_final
+
+
+def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
+    ### 1 - gerar matriz base
+    matriz_base = []
+    for i in range(qtd_criterios):
+        matriz_base.append(list(range(1,qtd_criterios+1)))
+
+    ### 2 - posicionar zeros na matriz base
+    pos_zero = 1
+    for lista in matriz_base:
+        lista[pos_zero-1] = 0
+        pos_zero +=1
+
+    ### 3 - gerar nova matriz com valores positivos após o zero
+    # remove os elementos após o 0
+    for lista in matriz_base:
+        zero_p = lista.index(0)
+        for i in lista[zero_p+1:]:
+            lista.remove(i)
+
+    # separa os criterios em um dicionario
+
+    dic_ = {}
+    for i in range(1,qtd_criterios+1):
+        key = 'a{}'.format(i)
+        dic_[key] = []
+
+    print(criterios_decisor)
+    print('au jeuss')
+    print(dic_)
+
+    for i in criterios_decisor:
+        print(i.alternativas)
+        print(i.valor)
+        k = i.alternativas[2:4]
+        dic_[k].append(i.valor)
+
+    print(dic_)
+
+    # completa a matriz com valores positivos
+    matriz_com_positivos = _completa_matriz_com_positivos(matriz_base, dic_, qtd_criterios)
+    print(matriz_com_positivos)
+
+    ### 4 - gerar nova matriz com valores negativos antes do zero
+    matriz_final = _completa_matriz_com_negativos_alt(matriz_com_positivos, dic_, qtd_criterios, criterios_decisor)
+    
+    print('==== matriz final ====')
+    print(matriz_final)
 
     return matriz_final
 
@@ -371,6 +441,18 @@ def _completa_matriz_com_negativos(matriz_n, dic, qtd_criterios, criterios_decis
 
     for i in criterios_decisor:
         k=i.criterios[-2:]
+        indice = criterios[k]
+        el = i.valor * -1
+        matriz_n[indice].insert(0, el)
+
+    return matriz_n
+
+
+def _completa_matriz_com_negativos_alt(matriz_n, dic, qtd_criterios, criterios_decisor):
+    criterios = {k:v for (v, k) in enumerate(dic.keys())}
+
+    for i in criterios_decisor:
+        k=i.alternativas[-2:]
         indice = criterios[k]
         el = i.valor * -1
         matriz_n[indice].insert(0, el)
