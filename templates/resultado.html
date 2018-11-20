@@ -3,11 +3,9 @@
 
 <h1>Resultado | Projeto {{projeto_nome}}</h1>
 
-
 <h3>Pesos</h3>
-<p>Critério <strong>Conforto</strong> - 0.015</p>
-<p>Critério <strong>Beleza</strong> - 1.5</p>
-<p>Critério <strong>Segurança</strong> - 3.0</p>
+<p>Critério - <strong>{{criterios.0}}</strong> - {{peso_final.0}}</p>
+<p>Critério - <strong>{{criterios.1}}</strong> - {{peso_final.1}}</p>
 
 <hr>
 
@@ -17,7 +15,6 @@
 </br></br>
 
 2º -- <strong>{{resultado.1.0}}</strong> -- {{ resultado.1.1}}
-</br></br>
-3º -- <strong>{{resultado.2.0}}</strong> -- {{ resultado.2.1}}
+
 
 {% endblock %}

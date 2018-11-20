@@ -379,6 +379,7 @@ def resultado(request, projeto_id):
         'projeto_nome': projeto.nome,
         'resultado': resultado,
         'peso_final': peso_final,
+        'criterios': criterios,
         })
 
 ######## aux functions   ########
