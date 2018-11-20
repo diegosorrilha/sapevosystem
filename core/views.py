@@ -320,8 +320,6 @@ def resultado(request, projeto_id):
             k2 = 'c{}'.format(criterios_decisor.values('criterio')[0]['criterio'])
             matrizes_alt[k1][k2] = matriz
 
-
-
     # normalizar listas
     matrizes_alt_normalizadas = {}
     for decisor in decisores:
@@ -341,10 +339,6 @@ def resultado(request, projeto_id):
                 for l,u in v.items():
                     matrizes_alt_normalizadas[k1][k2] = _normalizar_alternativas(u)
 
-            
-
-  
-    
     # soma as alternativas
     soma_alternativas = {}
     for decisor in decisores:
@@ -364,22 +358,27 @@ def resultado(request, projeto_id):
         print('========')
         soma = _soma_alternativa_por_criterio(v)
         soma_alternativas[k] = soma
-
-    print('soma_alternativas[0]')
-    print(soma_alternativas)
         
-        
+    # multiplica para achar o resultado
+    lista_somas = list(soma_alternativas.values())
+    resultado_um = _multiplica_final(lista_somas, peso_final)
+    alternativas = Alternativa.objects.filter(projeto=projeto_id)
     
+    resultado = []
+    count = 0
+    while count < len(alternativas)-1:
+        resultado.append( 
+            (alternativas[count], resultado_um[count]) 
+        )
+        count += 1
+
+    resultado.sort(key=lambda x: x[1] ,reverse=True)
 
 
-
-
-
-
-    
     return render(request, template_name, {
         'projeto_nome': projeto.nome,
-        'resultado': matrizes,
+        'resultado': resultado,
+        'peso_final': peso_final,
         })
 
 ######## aux functions   ########
@@ -595,4 +594,25 @@ def _soma_alternativa_por_criterio(lista_elementos):
         soma = sum([item[i] for item in lista_elementos])
         i =  i+ 1
         lista_somada.append(soma)
+    return lista_somada
+
+
+def _multiplica_final(lista_elementos, lista_pesos):
+    num_elementos = len(lista_pesos) 
+
+    lista_somada = []
+ 
+    i = 0
+    while i < num_elementos:
+        lista_primeiros_elementos = []
+        lista_primeiros_elementos = [item[i] for item in lista_elementos]
+        lista_multi = []
+
+        for numint, peso in enumerate(lista_pesos):
+            multi = peso * lista_primeiros_elementos[numint]
+            lista_multi.append(multi)
+
+
+        i =  i + 1
+        lista_somada.append(sum(lista_multi))
     return lista_somada

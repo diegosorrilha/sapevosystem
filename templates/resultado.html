@@ -2,23 +2,7 @@
 {% block container %}
 
 <h1>Resultado | Projeto {{projeto_nome}}</h1>
-<hr>
-<hr>
 
-{{resultado}}
-
-<hr>
-
-{% for i in resultado %}
-    {% for j in i %}
-        {{j}}
-        <br>
-    {% endfor %}
-    <hr>
-{%  endfor %}
-
-<hr>
-<hr>
 
 <h3>Pesos</h3>
 <p>Critério <strong>Conforto</strong> - 0.015</p>
@@ -27,9 +11,13 @@
 
 <hr>
 
-<h3>Ordenação</h3>
-<p>1° - <strong>Palio</strong> - 13.545</p>
-<p>2° - <strong>HB20</strong> - 6.7725</p>
-<p>3° - <strong>Gol</strong> - 0.0</p>
+<h3>Ordenação</br>
+</h3>
+1º -- <strong>{{resultado.0.0}}</strong> -- {{ resultado.0.1}}
+</br></br>
+
+2º -- <strong>{{resultado.1.0}}</strong> -- {{ resultado.1.1}}
+</br></br>
+3º -- <strong>{{resultado.2.0}}</strong> -- {{ resultado.2.1}}
 
 {% endblock %}
