@@ -274,6 +274,7 @@ def resultado(request, projeto_id):
     qtd_criterios = Criterio.objects.filter(projeto=projeto_id).count()
     qtd_alternativas = Alternativa.objects.filter(projeto=projeto_id).count()
     decisores = projeto.decisores.all()
+    criterios = Criterio.objects.filter(projeto=projeto_id)
 
     matrizes = []
     for decisor in decisores:
@@ -305,21 +306,75 @@ def resultado(request, projeto_id):
 
     matrizes_alt = {}
     for decisor in decisores:
-        criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=1)
-        k = 'c{}'.format(criterios_decisor.values('criterio')[0]['criterio'])
-        matrizes_alt[k] = []
-    
+        for criterio in criterios:
+            criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=criterio.id)
+            k1 = 'd{}'.format(decisor.id)
+            k2 = 'c{}'.format(criterios_decisor.values('criterio')[0]['criterio'])
+            matrizes_alt[k1] = {k2:[]}
     
     for decisor in decisores:
-        criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=1)
-        matriz = _gerar_matriz_alt(qtd_alternativas, criterios_decisor)
-        k = 'c{}'.format(criterios_decisor.values('criterio')[0]['criterio'])
-        matrizes_alt[k] = matriz
+        for criterio in criterios:
+            criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=criterio.id)
+            matriz = _gerar_matriz_alt(qtd_alternativas, criterios_decisor)
+            k1 = 'd{}'.format(decisor.id)
+            k2 = 'c{}'.format(criterios_decisor.values('criterio')[0]['criterio'])
+            matrizes_alt[k1][k2] = matriz
 
-    print('matrizes_alt', matrizes_alt)
 
-    for i in matrizes_alt:
-        print(i)
+
+    # normalizar listas
+    matrizes_alt_normalizadas = {}
+    for decisor in decisores:
+        for criterio in criterios:
+            criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=criterio.id)
+            k1 = 'd{}'.format(decisor.id)
+            k2 = 'c{}'.format(criterios_decisor.values('criterio')[0]['criterio'])
+            matrizes_alt_normalizadas[k1] = {k2:[]}
+
+
+    for decisor in decisores:
+        for criterio in criterios:
+            criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=criterio.id)
+            k1 = 'd{}'.format(decisor.id)
+            k2 = 'c{}'.format(criterios_decisor.values('criterio')[0]['criterio'])
+            for k,v in matrizes_alt.items():
+                for l,u in v.items():
+                    matrizes_alt_normalizadas[k1][k2] = _normalizar_alternativas(u)
+
+            
+
+  
+    
+    # soma as alternativas
+    soma_alternativas = {}
+    for decisor in decisores:
+        for criterio in criterios:
+            criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=criterio.id)
+            k1 = 'd{}'.format(decisor.id)
+            k2 = 'c{}'.format(criterios_decisor.values('criterio')[0]['criterio'])
+            soma_alternativas[k2] = []
+
+    for k,v in matrizes_alt_normalizadas.items():
+        print(k,v)
+        for l,u in v.items():
+            soma_alternativas[l].append(u)
+
+    for k,v in soma_alternativas.items():
+        print(k,v)
+        print('========')
+        soma = _soma_alternativa_por_criterio(v)
+        soma_alternativas[k] = soma
+
+    print('soma_alternativas[0]')
+    print(soma_alternativas)
+        
+        
+    
+
+
+
+
+
 
     
     return render(request, template_name, {
@@ -358,9 +413,6 @@ def _gerar_matriz(qtd_criterios, criterios_decisor):
     for i in range(1,qtd_criterios+1):
         key = 'c{}'.format(i)
         dic_[key] = []
-
-    print(criterios_decisor)
-    print('au jeuss')
 
     for i in criterios_decisor:
         k = i.criterios[:2]
@@ -401,27 +453,16 @@ def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
         key = 'a{}'.format(i)
         dic_[key] = []
 
-    print(criterios_decisor)
-    print('au jeuss')
-    print(dic_)
-
     for i in criterios_decisor:
-        print(i.alternativas)
-        print(i.valor)
         k = i.alternativas[2:4]
         dic_[k].append(i.valor)
 
-    print(dic_)
 
     # completa a matriz com valores positivos
     matriz_com_positivos = _completa_matriz_com_positivos(matriz_base, dic_, qtd_criterios)
-    print(matriz_com_positivos)
 
     ### 4 - gerar nova matriz com valores negativos antes do zero
     matriz_final = _completa_matriz_com_negativos_alt(matriz_com_positivos, dic_, qtd_criterios, criterios_decisor)
-    
-    print('==== matriz final ====')
-    print(matriz_final)
 
     return matriz_final
 
@@ -526,3 +567,32 @@ def _gerar_combinacoes_criterios(criterios):
                 combinacoes.append(subset)
 
     return combinacoes
+
+
+def _normalizar_alternativas(lista_elementos):
+    lista_dos_somados = []
+    lista_normalizada = []
+    
+    for elemento in lista_elementos:
+        soma = sum(elemento)
+        lista_dos_somados.append(soma)
+    
+    for elemento_da_soma in lista_dos_somados:
+        maior , menor = max(lista_dos_somados), min(lista_dos_somados)
+        if maior == menor :
+            regular = 0
+        else:
+            regular = ((elemento_da_soma - menor)/(maior - menor))
+        lista_normalizada.append(regular)
+    
+    return lista_normalizada
+
+def _soma_alternativa_por_criterio(lista_elementos):
+    num_elementos = len(lista_elementos) -1
+    lista_somada = []
+    i = 0
+    while i <= num_elementos:
+        soma = sum([item[i] for item in lista_elementos])
+        i =  i+ 1
+        lista_somada.append(soma)
+    return lista_somada
