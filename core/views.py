@@ -136,30 +136,28 @@ def cadastracriterios(request, projeto_id):
 
 def avaliarcriterios(request, projeto_id):
     '''
-    - avaliar criterios (cada decisor) - OK
-    - avaliar alternativas (cada decisor) ==> outra view
-    - normalizar para gerar lista de pesos
-    - calcular peso final
-    - normalizar alternativas
-    - somar alternativa por criterio
-    - 
-    
+    View para avaliar os critérios cadastrados.    
     ''' 
     template_name = 'avaliar_criterios.html'
     projeto_id = projeto_id
     projeto = Projeto.objects.get(id=projeto_id)
     decisores = list(Decisor.objects.filter(projeto=projeto_id, avaliou_criterios=False).values_list('id', 'nome'))
-    criterios_id = Criterio.objects.filter(projeto=projeto_id).values_list('id', flat=True)
+    criterios_cod = Criterio.objects.filter(projeto=projeto_id).values_list('codigo', flat=True)
+
 
     if not decisores:
         return redirect('avaliaralternativas', projeto_id)
 
-    combinacoes_criterios = _gerar_combinacoes_criterios(criterios_id)
-
+    combinacoes_criterios = _gerar_combinacoes_criterios(criterios_cod)
+    
     criterios_combinados = []
     for i in combinacoes_criterios:
-        nome_criterio1 = Criterio.objects.get(id=i[0]).nome
-        nome_criterio2 = Criterio.objects.get(id=i[1]).nome
+        print('demo', i)
+        cod_crit1 = i[0]
+        cod_crit2 = i[1]
+
+        nome_criterio1 = Criterio.objects.get(codigo=cod_crit1).nome
+        nome_criterio2 = Criterio.objects.get(codigo=cod_crit2).nome
 
         criterios_combinados.append(
             (nome_criterio1, nome_criterio2, i[0], i[1])
@@ -190,16 +188,6 @@ def avaliarcriterios(request, projeto_id):
                 'criterios_combinados': criterios_combinados,
                 'projeto_nome': projeto.nome,
                 })
-
-        # grava no banco 
-        # tabela avaliação_criterios
-        # projeto = projeto_id  ||  Carros   ||  Carros
-        # decisor = decisor.id  ||  Diego    ||  Zenon
-        # criterios = criterios ||  c1c2     ||  c1c2
-        # valor = 3             ||  3        ||  2
-        # print(f'd{decisor1.id}{criterios}')
-        # avaliacao_criterios = AvaliacaoCriterios.objects.filter(projeto=projeto_id)
-        # avaliacao_criterios = []
      
 
 def avaliaralternativas(request, projeto_id):
@@ -559,16 +547,22 @@ def _peso_criterios(lista_elementos):
 
 
 #### gerar combinacoes #####
-from itertools import product
 
-# mudar para _gerar_combinacoes(criterios/alternativas)
 def _gerar_combinacoes_criterios(criterios):
-    criterios_keys = criterios
-    
-    # criterios_keys = criterios.keys()
-    # criterios_keys = ['c1', 'c2', 'c3', 'c4']
+    '''
+    Funcao que gera combinacoes de criterios e alternativas
+    de acordo os criterios e alternativas cadastrados
 
-    # permsList = []
+    Recebe uma lista com os codigos dos criterios (Queryset)
+    [c1, c2, c3, c4]
+
+    Retorna uma lista de tuplas
+    [(c1, c2), (c1,c3) ('c1', 'c4')]
+    '''
+    from itertools import product
+
+    criterios_keys = criterios
+    print(criterios_keys)
     genComb = product(criterios_keys, repeat=2)
 
     combinacoes = []
