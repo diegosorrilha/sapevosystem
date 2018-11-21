@@ -101,12 +101,27 @@ def cadastracriterios(request, projeto_id):
     projeto_nome = projeto.nome
     criterios = Criterio.objects.filter(projeto=projeto_id)
 
+    if criterios:
+        ultimo_criterio = criterios.order_by('-id')[0]
+
     if request.method == 'POST':
         criterio_form = CriterioForm(request.POST)
         if criterio_form.is_valid():
+            if ultimo_criterio:
+                codigo_ultimo_criterio = ultimo_criterio.codigo
+                print(codigo_ultimo_criterio)
+                codigo = '{}{}'.format(
+                    codigo_ultimo_criterio[0], 
+                    int(codigo_ultimo_criterio[1])+1)
+            else:
+                codigo = 'c1'
+
             criterio_novo = criterio_form.save()
             criterio_novo.projeto = projeto
+            criterio_novo.codigo = codigo
             criterio_novo.save()
+
+            return redirect('cadastracriterios', projeto_id=projeto.id)
     
     else:
         criterio_form = CriterioForm()
