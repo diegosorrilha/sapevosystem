@@ -109,7 +109,6 @@ def cadastracriterios(request, projeto_id):
         if criterio_form.is_valid():
             if ultimo_criterio:
                 codigo_ultimo_criterio = ultimo_criterio.codigo
-                print(codigo_ultimo_criterio)
                 codigo = '{}{}'.format(
                     codigo_ultimo_criterio[0], 
                     int(codigo_ultimo_criterio[1])+1)
@@ -152,7 +151,6 @@ def avaliarcriterios(request, projeto_id):
     
     criterios_combinados = []
     for i in combinacoes_criterios:
-        print('demo', i)
         cod_crit1 = i[0]
         cod_crit2 = i[1]
 
@@ -562,7 +560,6 @@ def _gerar_combinacoes_criterios(criterios):
     from itertools import product
 
     criterios_keys = criterios
-    print(criterios_keys)
     genComb = product(criterios_keys, repeat=2)
 
     combinacoes = []
