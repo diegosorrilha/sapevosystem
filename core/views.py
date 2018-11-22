@@ -167,8 +167,8 @@ def avaliarcriterios(request, projeto_id):
         cod_crit1 = i[0]
         cod_crit2 = i[1]
 
-        nome_criterio1 = Criterio.objects.get(codigo=cod_crit1).nome
-        nome_criterio2 = Criterio.objects.get(codigo=cod_crit2).nome
+        nome_criterio1 = Criterio.objects.get(projeto=projeto_id, codigo=cod_crit1).nome
+        nome_criterio2 = Criterio.objects.get(projeto=projeto_id, codigo=cod_crit2).nome
 
         criterios_combinados.append(
             (nome_criterio1, nome_criterio2, i[0], i[1])
