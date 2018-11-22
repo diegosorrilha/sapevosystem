@@ -77,12 +77,25 @@ def cadastraalternativas(request, projeto_id):
     template_name = 'cadastra_alternativas.html'
     projeto_nome = projeto.nome
     alternativas = Alternativa.objects.filter(projeto=projeto_id)
+    ultima_alternativa = None
+
+    if alternativas:
+        ultima_alternativa = alternativas.order_by('-id')[0]
 
     if request.method == 'POST':
         alternativa_form = AlternativaForm(request.POST)
         if alternativa_form.is_valid():
+            if ultima_alternativa:
+                codigo_ultima_alternativa = ultima_alternativa.codigo
+                codigo = '{}{}'.format(
+                    codigo_ultima_alternativa[0],
+                    int(codigo_ultima_alternativa[1])+1)
+            else:
+                codigo = 'a1'
+
             alternativa_nova = alternativa_form.save()
             alternativa_nova.projeto = projeto
+            alternativa_nova.codigo = codigo
             alternativa_nova.save()
 
     else:
@@ -100,6 +113,7 @@ def cadastracriterios(request, projeto_id):
     template_name = 'cadastra_criterios.html'
     projeto_nome = projeto.nome
     criterios = Criterio.objects.filter(projeto=projeto_id)
+    ultimo_criterio = None
 
     if criterios:
         ultimo_criterio = criterios.order_by('-id')[0]

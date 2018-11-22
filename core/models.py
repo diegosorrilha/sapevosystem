@@ -22,6 +22,7 @@ class Projeto(models.Model):
 class Alternativa(models.Model):
     projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE, null=True)
     nome = models.CharField(max_length=20)
+    codigo = models.CharField(max_length=2)
 
     def __str__(self):
         return self.nome
