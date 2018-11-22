@@ -222,8 +222,8 @@ def avaliaralternativas(request, projeto_id):
         cod_alt1 = i[0]
         cod_alt2 = i[1]
 
-        nome_alternativa1 = Alternativa.objects.get(codigo=cod_alt1).nome
-        nome_alternativa2 = Alternativa.objects.get(codigo=cod_alt2).nome
+        nome_alternativa1 = Alternativa.objects.get(projeto=projeto_id, codigo=cod_alt1).nome
+        nome_alternativa2 = Alternativa.objects.get(projeto=projeto_id, codigo=cod_alt2).nome
 
         alternativas_combinadas.append(
             (nome_alternativa1, nome_alternativa2, i[0], i[1])
