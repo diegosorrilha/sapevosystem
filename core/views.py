@@ -647,68 +647,9 @@ def _peso_criterios(lista_elementos):
     print( 'soma_pesos', soma_pesos)
     
     print('#############################')
-    
+
     return soma_pesos
 
-    # idx1=0
-    # idx2=0
-    # num_listas = len(lista_elementos) -1 # 3
-
-    # # num_elementos / 4
-    # pesos_somados = []
-    # while idx1 <= num_listas:
-    # # while idx2 <=num_elementos:
-    #     # print(lista_elementos[idx1])
-    #     # print('demonio', lista_elementos[idx1][idx2])
-    #     pesos = []
-    #     for i in range(num_elementos):
-    #         print('num_elementos', num_elementos)
-    #         print('idx1', idx1)
-    #         print('idx2', idx2)
-    #         # print('agora vai', lista_elementos[idx1][idx2])
-    #         print('puta merda', i)
-    #         print('pesos', pesos)
-    #         print('================')
-    #         # pesos.append(lista_elementos[idx1][idx2])
-    #         # pesos_somados.append(sum(pesos))
-    #         # print('peso', lista_elementos[idx1][idx2])
-    #         # print('soma', sum(peso))
-    #         print('FINAL <<<<<<<<<<')
-    #         idx1 += 1
-            
-    #     idx2 += 1
-
-
-    # # for lista in lista_elementos:
-    # #     print('lista', idx2, lista[idx2])
-    # #     pesos.append(lista[idx2])
-        
-    # print('pesos', pesos)
-    # print('soma pesos com idx2=0', pesos_somados)
-        
-
-
-    # while i <= num_elementos:
-    #     soma = sum([item[i] for item in lista_elementos])
-    #     i =  i + 1
-    #     # print('soma', soma)
-    #     pesos.append(soma)
-    # # print('pesos', pesos)
-    # return pesos
-
-    # pesos = []
-    # i = 0
-    # while i <= num_elementos:
-    #     soma = sum([item[i] for item in lista_elementos])
-    #     i =  i + 1
-    #     print('soma', soma)
-    #     pesos.append(soma)
-    # print('pesos', pesos)
-    # return pesos
-
-
-
-#### gerar combinacoes #####
 
 def _gerar_combinacoes_criterios(criterios):
     '''
