@@ -606,47 +606,37 @@ def _normalizar(lista_elementos):
     return lista_final_normalizada
 
 
+def _separa_elementos(lista_elementos, idx):
+    '''
+    Funcao que separa lista de listas pelo indice.
+
+    Ex.:
+    INPUT:
+    lista_de_listas = [
+        [0.3333, 1, 2, 3], 
+        [0.3333, 1, 2, 3], 
+        [0.3333, 1, 2, 3]
+    ]
+
+    _separa_elementos(lista_de_listas, 0)
+
+    OUTPUT:
+    [0.33333, 0.33333, 0.33333]
+    '''
+    lista_separada = []
+    for l in lista_elementos:
+        lista_separada.append(l[idx])
+    return lista_separada
+
+
 def _peso_criterios(lista_elementos):
-    # indices de acorda com cada decisor => 3 decisores = 2 indices 
-    
-    # num_elementos = len(lista_elementos) -1
     num_elementos = len(lista_elementos[0])
-    
-    print('#############################')
-
-    # print(lista_elementos)
-
-    def _separa_elementos(lista_elementos, idx):
-        '''
-        Funcao que separa lista de listas pelo indice.
-
-        INPUT:
-        lista_de_listas = [
-            [0.3333, 1, 2, 3], 
-            [0.3333, 1, 2, 3], 
-            [0.3333, 1, 2, 3]
-        ]
-
-        _separa_elementos(lista_de_listas, 0)
-
-        OUTPUT:
-        [0.33333, 0.33333, 0.33333]
-
-        '''
-        lista_separada = []
-        for l in lista_elementos:
-            lista_separada.append(l[idx])
-        return lista_separada
 
     soma_pesos = []
     for idx in range(num_elementos):
         lista_temp = []
         lista_temp = _separa_elementos(lista_elementos, idx)
         soma_pesos.append(sum(lista_temp))
-    
-    print( 'soma_pesos', soma_pesos)
-    
-    print('#############################')
 
     return soma_pesos
 
