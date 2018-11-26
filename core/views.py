@@ -568,9 +568,6 @@ def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
 
 
 def _completa_matriz_com_positivos(matriz, dic, qtd_criterios):
-    print('\n=====================')
-    print('AQUI ESTA A MERDA!!!!')
-    print('=====================')
     matriz_nova = []
     for i in matriz:
         l = []
@@ -749,7 +746,6 @@ def _separa_primeiros_elementos(lista_elementos, idx):
     print('tamanho lista_elementos',len(lista_elementos))
     print('lista_elementos', lista_elementos)
     for item in lista_elementos:
-        # print('capetao', item, idx)
         # print('item', item[idx])
         # if idx < len(lista_elementos)-1:
         lista_separada.append(item[idx])
