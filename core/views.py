@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm
 from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios, AvaliacaoAlternativas
-
+import collections
 
 def index(request):
     """ 
@@ -539,7 +539,6 @@ def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
             lista.remove(i)
 
     # separa os criterios em um dicionario
-    import collections
     dic_ = collections.OrderedDict()
     # dic_ = {}
     for i in range(1,qtd_criterios+1):
