@@ -328,6 +328,7 @@ def resultado(request, projeto_id):
             criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=criterio.id)
             # print('CARAKAAAAAAAAA')
             # print(criterio)
+            print(criterios_decisor)
             matriz = _gerar_matriz_alt(qtd_alternativas, criterios_decisor)
             k1 = 'd{}'.format(decisor.id)
             # k2 = 'c{}'.format(criterios_decisor.values('criterio')[0]['criterio'])
@@ -341,6 +342,9 @@ def resultado(request, projeto_id):
     #         k1 = 'd{}'.format(decisor.id)
     #         k2 = 'c{}'.format(criterios_decisor.values('criterio')[0]['criterio'])
     #         matrizes_alt[k1][k2] = matriz
+
+    print('\nMATRIZZZZZZ ALT\n')
+    print('matrizes alt ', matrizes_alt)
 
     # normalizar listas
     matrizes_alt_normalizadas = {}
@@ -377,6 +381,10 @@ def resultado(request, projeto_id):
     #             for l,u in v.items():
     #                 matrizes_alt_normalizadas[k1][k2] = _normalizar_alternativas(u)
 
+    print('\nMATRIZZZZZZ ALT NORMALIZADAS\n')
+    print('matrizes alt norm. ', matrizes_alt_normalizadas)
+
+
     # soma as alternativas
     soma_alternativas = {}
     for decisor in decisores:
@@ -402,8 +410,9 @@ def resultado(request, projeto_id):
             soma_alternativas[l].append(u)
 
     for k,v in soma_alternativas.items():
-        # print(k,v)
-        # print('========')
+
+        print(k,v)
+        print('========')
         soma = _soma_alternativa_por_criterio(v)
         soma_alternativas[k] = soma
 
@@ -411,12 +420,16 @@ def resultado(request, projeto_id):
 
     # multiplica para achar o resultado
     lista_somas = list(soma_alternativas.values())
+    print('lista_somas', lista_somas)
+
+    print('peso_final', peso_final)
     resultado_um = _multiplica_final(lista_somas, peso_final)
     alternativas = Alternativa.objects.filter(projeto=projeto_id)
     
-
-    print('INPUT do _multiplica_final', lista_somas)
+    print('\n###########\n')
+    
     print('resposta do _multiplica_final', resultado_um)
+    print('\n###########\n')
 
 
     resultado = []
@@ -506,11 +519,17 @@ def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
     for i in range(qtd_criterios):
         matriz_base.append(list(range(1,qtd_criterios+1)))
 
+    print('\n>>>>> GERAR_MATRIZ_ALT')
+    print('matriz_base', matriz_base)
+
     ### 2 - posicionar zeros na matriz base
     pos_zero = 1
     for lista in matriz_base:
         lista[pos_zero-1] = 0
         pos_zero +=1
+
+    # print('>>>>> GERAR_MATRIZ_ALT')
+    print('matriz_base com zeros', matriz_base)
 
     ### 3 - gerar nova matriz com valores positivos após o zero
     # remove os elementos após o 0
@@ -520,28 +539,38 @@ def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
             lista.remove(i)
 
     # separa os criterios em um dicionario
-
-    dic_ = {}
+    import collections
+    dic_ = collections.OrderedDict()
+    # dic_ = {}
     for i in range(1,qtd_criterios+1):
         key = 'a{}'.format(i)
         dic_[key] = []
 
     for i in criterios_decisor:
-        # print('i', i)
+        print('i', i.alternativas)
+        print('i', i.valor)
         k = i.alternativas[2:4]
         dic_[k].append(i.valor)
 
+    print('\n>>>>>>>>>>>>>>>>>>>>>>>')
+    print('dicionario malucao', dic_)
+    print('>>>>>>>>>>>>>>>>>>>>>>>>>')
 
     # completa a matriz com valores positivos
     matriz_com_positivos = _completa_matriz_com_positivos(matriz_base, dic_, qtd_criterios)
+    print('matriz com positivos', matriz_com_positivos)
 
     ### 4 - gerar nova matriz com valores negativos antes do zero
     matriz_final = _completa_matriz_com_negativos_alt(matriz_com_positivos, dic_, qtd_criterios, criterios_decisor)
+    print('matriz final', matriz_final)
 
     return matriz_final
 
 
 def _completa_matriz_com_positivos(matriz, dic, qtd_criterios):
+    print('\n=====================')
+    print('AQUI ESTA A MERDA!!!!')
+    print('=====================')
     matriz_nova = []
     for i in matriz:
         l = []
@@ -697,6 +726,9 @@ def _normalizar_alternativas(lista_elementos):
     return lista_normalizada
 
 def _soma_alternativa_por_criterio(lista_elementos):
+    print('\n====== _SOMA_ALTERNATIVA_POR_CRITERIO ======')
+    print('lista_elementos ', lista_elementos)
+
     num_elementos = len(lista_elementos) -1
     lista_somada = []
     i = 0
@@ -704,30 +736,60 @@ def _soma_alternativa_por_criterio(lista_elementos):
         soma = sum([item[i] for item in lista_elementos])
         i =  i+ 1
         lista_somada.append(soma)
+    
+    print('lista_somada', lista_somada)
+
     return lista_somada
 
 
+def _separa_primeiros_elementos(lista_elementos, idx):
+    print('\n====== _SEPARA_PRIMEIROS_ELEMENTOS ======')
+
+    lista_separada = []
+    print('tamanho lista_elementos',len(lista_elementos))
+    print('lista_elementos', lista_elementos)
+    for item in lista_elementos:
+        # print('capetao', item, idx)
+        # print('item', item[idx])
+        # if idx < len(lista_elementos)-1:
+        lista_separada.append(item[idx])
+        
+    print('lista_separada' ,lista_separada)
+    return lista_separada
+
+
+def _multiplicar_pelo_peso(lista_primeiros_elementos ,lista_pesos):
+    lista_multi = []
+    # print('aqui ó',lista_primeiros_elementos)
+    for numint, peso in enumerate(lista_pesos):
+        # print('>>>>>>>>>>>>>>>>>> CAPETA')
+        # print('numint', lista_primeiros_elementos[numint])
+        # print('peso', peso)
+        multi = peso * lista_primeiros_elementos[numint]
+        lista_multi.append(multi)
+
+    # print('lista_multi', lista_multi)
+    return lista_multi
+
+
 def _multiplica_final(lista_elementos, lista_pesos):
-    num_elementos = len(lista_pesos) 
-    # print('>>>>>> MULTIPLICA_FINAL<<<<<<<')
-    # print('l_e >>>>', lista_elementos)
-    # print('l_p >>>>', lista_pesos)
+    print('\n====== MULTIPLICA_FINAL ======')
+    print('lista_elementos', lista_elementos)
 
+    num_elementos = len(lista_elementos)
     lista_somada = []
- 
-    i = 0
-    while i < num_elementos:
-        lista_primeiros_elementos = []
-        lista_primeiros_elementos = [item[i] for item in lista_elementos]
-        lista_multi = []
 
-        for numint, peso in enumerate(lista_pesos):
-            multi = peso * lista_primeiros_elementos[numint]
-            lista_multi.append(multi)
+    for idx in range(num_elementos):
+        lista_primeiros_el = _separa_primeiros_elementos(
+                                lista_elementos, 
+                                idx)
 
+        lista_multiplicada = _multiplicar_pelo_peso(
+            lista_primeiros_el, lista_pesos
+        )
+        # print('caceta', lista_multiplicada)
 
-        i =  i + 1
-        lista_somada.append(sum(lista_multi))
-
-    print('LISTA SOMADA==>', lista_somada)
+        lista_somada.append(sum(lista_multiplicada))
+        print('lista_somadaaaaaa', lista_somada)
+        print('idx', idx)
     return lista_somada
