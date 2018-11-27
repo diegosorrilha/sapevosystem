@@ -314,17 +314,29 @@ def resultado(request, projeto_id):
             matrizes_alt[k1][k2] = matriz
 
     #gera matriz de alternativa normalizadas
-    matrizes_alt_normalizadas = collections.OrderedDict()
+    matrizes_alt_normalizadas = {}
+ 
+    matrizes_alt_normalizadas = {}
     for decisor in decisores:
         for criterio in criterios:
             criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=criterio.id)
             k1 = 'd{}'.format(decisor.id)
             k2 = '{}'.format(criterio.codigo)
-            matrizes_alt_normalizadas[k1] = {k2:[]}
+            matrizes_alt_normalizadas[k1] = {}
+
+    print('etcha', matrizes_alt_normalizadas)
+
+    for decisor in decisores:
+        for criterio in criterios:
+            criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=criterio.id)
+            k1 = 'd{}'.format(decisor.id)
+            k2 = '{}'.format(criterio.codigo)
 
             for k,v in matrizes_alt.items():
                 for l,u in v.items():
-                    matrizes_alt_normalizadas[k1][k2].append(_normalizar_alternativas(u))
+                    matrizes_alt_normalizadas[k1][k2] = _normalizar_alternativas(u)
+
+   
 
     # soma as alternativas
     alternativas_para_somar = collections.OrderedDict()
@@ -334,9 +346,16 @@ def resultado(request, projeto_id):
             k2 = '{}'.format(criterio.codigo)
             alternativas_para_somar[k2] = []
     
+    print('capiro', alternativas_para_somar)
+    print(matrizes_alt_normalizadas.items())
+
     for k,v in matrizes_alt_normalizadas.items():
         for l,u in v.items():
+            print('\n===========\n')
+            print(l )
             alternativas_para_somar[l].append(u)
+
+    # print(alternativas_para_somar)
 
     alternativas_ordenadas = collections.OrderedDict()
     for k,v in alternativas_para_somar.items():
@@ -635,6 +654,12 @@ def _separa_alternativas(criterio, lista_elementos, idx):
 
 
 def _soma_alternativa(alternativas_ordenadas, idx):
+    #### print()
+    # print('_SOMA_ALTERNATIVA')
+    #### print()
+
+    # print(alternativas_ordenadas)
+
     alternativas_somadas = []
     for i in alternativas_ordenadas:
         alternativas_somadas.append(sum(i[idx]))
