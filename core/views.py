@@ -364,7 +364,7 @@ def resultado(request, projeto_id):
         alternativas_ordenadas[k] = []
 
     for k,v in alternativas_para_somar.items():
-        for i in range(len(alternativas_para_somar)+1):
+        for i in range(len(alternativas_para_somar)):
             alternativas_ordenadas[k].append(
                 _separa_alternativas(k, v, i)
             )
@@ -690,7 +690,7 @@ def _soma_alternativa_por_criterio(alternativas_ordenadas):
 
     alternativas_somadas = []
 
-    for i in range(len(alternativas_ordenadas.values())+1):
+    for i in range(len(alternativas_ordenadas.values())):
         alternativas_somadas.insert(
             i,
             _soma_alternativa(alternativas_ordenadas.values(), i)
@@ -702,14 +702,21 @@ def _soma_alternativa_por_criterio(alternativas_ordenadas):
 def _separa_primeiros_elementos(lista_elementos, idx):
     
     lista_separada = []
+    lista_separada = lista_elementos[idx]
+    print('lista_separada', lista_separada)
     
-    for item in lista_elementos:
-        lista_separada.append(item[idx])
+    # for item in lista_elementos:
+    #     print('item', item)
+    #     print('item[0]', item[0])
+    #     lista_separada.append(item[idx])
         
     return lista_separada
 
 
 def _multiplicar_pelo_peso(lista_primeiros_elementos ,lista_pesos):
+    print('\n_+_+__+_+_+_+__+_+')
+    print(lista_primeiros_elementos)
+
     lista_multi = []
     for numint, peso in enumerate(lista_pesos):
   
@@ -727,7 +734,9 @@ def _multiplica_final(lista_elementos, lista_pesos):
     print('\n')
 
 
-    num_elementos = len(lista_elementos[0])
+    num_elementos = len(lista_elementos)
+    print('\n  NUM ELEMENTOS =====  \n')
+    print(num_elementos)
     lista_somada = []
 
     for idx in range(num_elementos):
@@ -735,9 +744,22 @@ def _multiplica_final(lista_elementos, lista_pesos):
                                 lista_elementos, 
                                 idx)
 
+        print('\n +++++++++++++++')
+        print('lista_primeiros_el')
+        print(lista_primeiros_el)
+        print('\n +++++++++++++++')
+
+        # lista_multiplicada = _multiplicar_pelo_peso(
+        #     lista_elementos, lista_pesos
+        # )
         lista_multiplicada = _multiplicar_pelo_peso(
             lista_primeiros_el, lista_pesos
         )
+
+        print('\n +++++++++++++++')
+        print('lista_multiplicada')
+        print(lista_multiplicada)
+        print('\n +++++++++++++++')
 
         lista_somada.append(sum(lista_multiplicada))
 
