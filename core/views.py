@@ -277,6 +277,8 @@ def resultado(request, projeto_id):
     decisores = projeto.decisores.all()
     criterios = Criterio.objects.filter(projeto=projeto_id)
 
+    #### Criterios ####
+
     matrizes = []
     for decisor in decisores:
         criterios_decisor = AvaliacaoCriterios.objects.filter(projeto=projeto_id, decisor=decisor.id)
@@ -292,11 +294,69 @@ def resultado(request, projeto_id):
     # calcular o peso final 
     peso_final = _peso_criterios(pesos_decisores)
 
-    # gera matriz de alternativa para cada decisor
-    matrizes_alt = {}
+
+    #### Alternativas ####
+    print('\n ALTERNATIVAS\n')
+    '''
+    matriz_alternativas:
+    d1: c1 [
+        A1: [0, 1, 2, 2],
+        A2: [-1, 0, 1, 3],
+        A3: [-2, -1, 0, 1],
+        A4: [-2, -3, -3, 0],
+    ], 
+    d1: c1 [
+        A1: [0, 1, 2, 2],
+        A2: [-1, 0, 1, 3],
+        A3: [-2, -1, 0, 1],
+        A4: [-2, -3, -3, 0],
+    ], 
+
+    m[0][0]
+    m{d1}{c1}
+    for 
+    m = [
+        d1:{0} [
+            c1:{0} [
+                A1:{0} [0, 1, 2, 2],
+                A2:{1} [-1, 0, 1, 3],
+                A3:{2} [-2, -1, 0, 1],
+                A4:{3} [-2, -3, -3, 0],
+            ]
+            c2:{1} [
+                A1:{0} [0, 1, 2, 2],
+                A2:{1} [-1, 0, 1, 3],
+                A3:{2} [-2, -1, 0, 1],
+                A4:{3} [-2, -3, -3, 0],
+            ]
+        ]
+        d2:{1} [
+            c1:{0} [
+                A1:{0} [0, 1, 2, 2],
+            ]
+        ]
+    ]
+
+
+    matriz_alternativas_normalizadas:
+    d1: c1 [
+        A1
+    ]
+
+    ######
+    resultado_um = multiplica_final(
+        matriz_alternativas_normalizadas
+    )
+
+    '''
+
+    ## cria matriz de alternativas
+
+    #gera matriz de alternativa para cada decisor
+    matrizes_alt = collections.OrderedDict()
     for decisor in decisores:
+        k1 = 'd{}'.format(decisor.id)
         for criterio in criterios:
-            k1 = 'd{}'.format(decisor.id)
             k2 = '{}'.format(criterio.codigo)
             matrizes_alt[k1] = {k2:[]}
 
@@ -308,7 +368,14 @@ def resultado(request, projeto_id):
             k2 = '{}'.format(criterio.codigo)
             matrizes_alt[k1][k2] = matriz
 
-    # normalizar listas
+    #### print()
+    for k,v in matrizes_alt.items():
+        # print(k, v)
+        for kk,vv in v.items():
+            print(k, kk, vv)
+        print('>>>>>>>>>>>>>>>>>')
+    #### print()
+
     matrizes_alt_normalizadas = collections.OrderedDict()
     for decisor in decisores:
         for criterio in criterios:
@@ -317,15 +384,18 @@ def resultado(request, projeto_id):
             k2 = '{}'.format(criterio.codigo)
             matrizes_alt_normalizadas[k1] = {k2:[]}
 
-
-    for decisor in decisores:
-        for criterio in criterios:
-            criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=criterio.id)
-            k1 = 'd{}'.format(decisor.id)
-            k2 = '{}'.format(criterio.codigo)
             for k,v in matrizes_alt.items():
                 for l,u in v.items():
-                    matrizes_alt_normalizadas[k1][k2] = _normalizar_alternativas(u)
+                    matrizes_alt_normalizadas[k1][k2].append(_normalizar_alternativas(u))
+
+    #### print()
+    print('normalizar a porra do bagulho')
+    for k,v in matrizes_alt_normalizadas.items():
+        print(k, v)
+        for kk,vv in v.items():
+            print(k, kk, vv)
+        print('>>>>>>>>>>>>>>>>>')
+    #### print()
 
 
     # soma as alternativas
@@ -375,7 +445,15 @@ def resultado(request, projeto_id):
         })
 
 
+
+
+
+
+
+#################################
 ######## aux functions   ########
+#################################
+# TODO: colocar em arquivo separado
 
 def _inclui_decisor_no_projeto(projeto, decisor):
     projeto.decisores.add(decisor)
@@ -424,6 +502,7 @@ def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
     ### 1 - gerar matriz base
     matriz_base = []
     for i in range(qtd_criterios):
+        # matriz_base.append(list(range(1,qtd_criterios+1)))
         matriz_base.append(list(range(1,qtd_criterios+1)))
 
     ### 2 - posicionar zeros na matriz base
@@ -452,7 +531,7 @@ def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
 
     # completa a matriz com valores positivos
     matriz_com_positivos = _completa_matriz_com_positivos(matriz_base, dic_, qtd_criterios)
-
+    
     ### 4 - gerar nova matriz com valores negativos antes do zero
     matriz_final = _completa_matriz_com_negativos_alt(matriz_com_positivos, dic_, qtd_criterios, criterios_decisor)
 
@@ -597,6 +676,9 @@ def _gerar_combinacoes_criterios(criterios):
 
 
 def _normalizar_alternativas(lista_elementos):
+    # print('\nNORMALIZA_ALTERNATIVAS\n')
+    # print('lista_elementos', lista_elementos)
+
     lista_dos_somados = []
     lista_normalizada = []
     
@@ -612,6 +694,8 @@ def _normalizar_alternativas(lista_elementos):
             regular = ((elemento_da_soma - menor)/(maior - menor))
         lista_normalizada.append(regular)
     
+    # print('lista_normalizada', lista_normalizada)
+
     return lista_normalizada
 
 
@@ -631,6 +715,9 @@ def _soma_alternativa(alternativas_ordenadas, idx):
 
 
 def _soma_alternativa_por_criterio(alternativas_ordenadas):
+    # print('\n')
+    # print('alternativas_ordenadas', alternativas_ordenadas)
+
     alternativas_somadas = []
 
     for i in range(len(alternativas_ordenadas.values())):
@@ -643,6 +730,7 @@ def _soma_alternativa_por_criterio(alternativas_ordenadas):
 
 
 def _separa_primeiros_elementos(lista_elementos, idx):
+    
     lista_separada = []
     
     for item in lista_elementos:
@@ -662,6 +750,13 @@ def _multiplicar_pelo_peso(lista_primeiros_elementos ,lista_pesos):
 
 
 def _multiplica_final(lista_elementos, lista_pesos):
+    # print('\n')
+    # print('lista elementos', lista_elementos)
+    # print('\n')
+    # print('lista pesos', lista_pesos)
+    # print('\n')
+
+
     num_elementos = len(lista_elementos[0])
     lista_somada = []
 
