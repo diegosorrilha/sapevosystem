@@ -294,63 +294,8 @@ def resultado(request, projeto_id):
     # calcular o peso final 
     peso_final = _peso_criterios(pesos_decisores)
 
-
     #### Alternativas ####
     print('\n ALTERNATIVAS\n')
-    '''
-    matriz_alternativas:
-    d1: c1 [
-        A1: [0, 1, 2, 2],
-        A2: [-1, 0, 1, 3],
-        A3: [-2, -1, 0, 1],
-        A4: [-2, -3, -3, 0],
-    ], 
-    d1: c1 [
-        A1: [0, 1, 2, 2],
-        A2: [-1, 0, 1, 3],
-        A3: [-2, -1, 0, 1],
-        A4: [-2, -3, -3, 0],
-    ], 
-
-    m[0][0]
-    m{d1}{c1}
-    for 
-    m = [
-        d1:{0} [
-            c1:{0} [
-                A1:{0} [0, 1, 2, 2],
-                A2:{1} [-1, 0, 1, 3],
-                A3:{2} [-2, -1, 0, 1],
-                A4:{3} [-2, -3, -3, 0],
-            ]
-            c2:{1} [
-                A1:{0} [0, 1, 2, 2],
-                A2:{1} [-1, 0, 1, 3],
-                A3:{2} [-2, -1, 0, 1],
-                A4:{3} [-2, -3, -3, 0],
-            ]
-        ]
-        d2:{1} [
-            c1:{0} [
-                A1:{0} [0, 1, 2, 2],
-            ]
-        ]
-    ]
-
-
-    matriz_alternativas_normalizadas:
-    d1: c1 [
-        A1
-    ]
-
-    ######
-    resultado_um = multiplica_final(
-        matriz_alternativas_normalizadas
-    )
-
-    '''
-
-    ## cria matriz de alternativas
 
     #gera matriz de alternativa para cada decisor
     matrizes_alt = collections.OrderedDict()
@@ -368,14 +313,7 @@ def resultado(request, projeto_id):
             k2 = '{}'.format(criterio.codigo)
             matrizes_alt[k1][k2] = matriz
 
-    #### print()
-    for k,v in matrizes_alt.items():
-        # print(k, v)
-        for kk,vv in v.items():
-            print(k, kk, vv)
-        print('>>>>>>>>>>>>>>>>>')
-    #### print()
-
+    #gera matriz de alternativa normalizadas
     matrizes_alt_normalizadas = collections.OrderedDict()
     for decisor in decisores:
         for criterio in criterios:
@@ -387,16 +325,6 @@ def resultado(request, projeto_id):
             for k,v in matrizes_alt.items():
                 for l,u in v.items():
                     matrizes_alt_normalizadas[k1][k2].append(_normalizar_alternativas(u))
-
-    #### print()
-    print('normalizar a porra do bagulho')
-    for k,v in matrizes_alt_normalizadas.items():
-        print(k, v)
-        for kk,vv in v.items():
-            print(k, kk, vv)
-        print('>>>>>>>>>>>>>>>>>')
-    #### print()
-
 
     # soma as alternativas
     alternativas_para_somar = collections.OrderedDict()
