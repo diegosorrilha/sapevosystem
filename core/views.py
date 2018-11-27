@@ -371,7 +371,7 @@ def resultado(request, projeto_id):
     
     print('\n alternativas_ordenadas \/\n')
     print(alternativas_ordenadas)
-    print('\n alternativas_ordenadas /\\n')
+    print('\n alternativas_ordenadas /\ \n')
 
     lista_somas = _soma_alternativa_por_criterio(alternativas_ordenadas)
 
@@ -690,7 +690,7 @@ def _soma_alternativa_por_criterio(alternativas_ordenadas):
 
     alternativas_somadas = []
 
-    for i in range(len(alternativas_ordenadas.values())):
+    for i in range(len(alternativas_ordenadas.values())+1):
         alternativas_somadas.insert(
             i,
             _soma_alternativa(alternativas_ordenadas.values(), i)
@@ -720,11 +720,11 @@ def _multiplicar_pelo_peso(lista_primeiros_elementos ,lista_pesos):
 
 
 def _multiplica_final(lista_elementos, lista_pesos):
-    # print('\n')
-    # print('lista elementos', lista_elementos)
-    # print('\n')
-    # print('lista pesos', lista_pesos)
-    # print('\n')
+    print('\n')
+    print('lista elementos', lista_elementos)
+    print('\n')
+    print('lista pesos', lista_pesos)
+    print('\n')
 
 
     num_elementos = len(lista_elementos[0])
