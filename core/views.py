@@ -295,7 +295,6 @@ def resultado(request, projeto_id):
     peso_final = _peso_criterios(pesos_decisores)
 
     #### Alternativas ####
-    print('\n ALTERNATIVAS\n')
 
     #gera matriz de alternativa para cada decisor
     matrizes_alt = collections.OrderedDict()
@@ -314,8 +313,6 @@ def resultado(request, projeto_id):
             matrizes_alt[k1][k2] = matriz
 
     #gera matriz de alternativa normalizadas
-    # matrizes_alt_normalizadas = {}
- 
     matrizes_alt_normalizadas = {}
     for decisor in decisores:
         for criterio in criterios:
@@ -333,11 +330,7 @@ def resultado(request, projeto_id):
 
             for k,v in matrizes_alt.items():
                 for l,u in v.items():
-                    print('u => ', u)
                     matrizes_alt_normalizadas[k1][k2] = _normalizar_alternativas(u)
-
-    print(matrizes_alt_normalizadas)
-    print('\n matrizes_alt_normalizadas ^\n')
 
     # soma as alternativas
     alternativas_para_somar = collections.OrderedDict()
@@ -347,17 +340,11 @@ def resultado(request, projeto_id):
             k2 = '{}'.format(criterio.codigo)
             alternativas_para_somar[k2] = []
     
-    # print('capiro', alternativas_para_somar)
-    # print(matrizes_alt_normalizadas.items())
 
     for k,v in matrizes_alt_normalizadas.items():
         for l,u in v.items():
-            # print('\n===========\n')
-            # print(l )
             alternativas_para_somar[l].append(u)
 
-    print(alternativas_para_somar)
-    print('\n alternativas para somar ^\n')
 
     alternativas_ordenadas = collections.OrderedDict()
     for k,v in alternativas_para_somar.items():
@@ -368,15 +355,8 @@ def resultado(request, projeto_id):
             alternativas_ordenadas[k].append(
                 _separa_alternativas(k, v, i)
             )
-    
-    print('\n alternativas_ordenadas \/\n')
-    print(alternativas_ordenadas)
-    print('\n alternativas_ordenadas /\ \n')
 
     lista_somas = _soma_alternativa_por_criterio(alternativas_ordenadas)
-
-    print(lista_somas)
-    print('\n lista_somas ^\n')
 
     resultado_um = _multiplica_final(lista_somas, peso_final)
     alternativas = Alternativa.objects.filter(projeto=projeto_id)
@@ -632,16 +612,11 @@ def _gerar_combinacoes_criterios(criterios):
 
 
 def _normalizar_alternativas(lista_elementos):
-    print('\nNORMALIZA_ALTERNATIVAS\n')
-    print('lista_elementos', lista_elementos)
-    print('\n')
-
     lista_dos_somados = []
     lista_normalizada = []
     
     for elemento in lista_elementos:
         soma = sum(elemento)
-        print('soma', soma)
         lista_dos_somados.append(soma)
     
     for elemento_da_soma in lista_dos_somados:
@@ -651,32 +626,19 @@ def _normalizar_alternativas(lista_elementos):
         else:
             regular = ((elemento_da_soma - menor)/(maior - menor))
 
-        print('regular', regular)
         lista_normalizada.append(regular)
-    
-    # print('lista_normalizada', lista_normalizada)
 
     return lista_normalizada
 
 
 def _separa_alternativas(criterio, lista_elementos, idx):
-    print('lista_elementos', lista_elementos)
     lista_separada = []
     for item in lista_elementos:
-        print('\n==========')
-        print(item[idx])
-        print('\n==========')
         lista_separada.append(item[idx])
     return lista_separada
 
 
 def _soma_alternativa(alternativas_ordenadas, idx):
-    #### print()
-    # print('_SOMA_ALTERNATIVA')
-    #### print()
-
-    # print(alternativas_ordenadas)
-
     alternativas_somadas = []
     for i in alternativas_ordenadas:
         alternativas_somadas.append(sum(i[idx]))
@@ -685,9 +647,6 @@ def _soma_alternativa(alternativas_ordenadas, idx):
 
 
 def _soma_alternativa_por_criterio(alternativas_ordenadas):
-    # print('\n')
-    # print('alternativas_ordenadas', alternativas_ordenadas)
-
     alternativas_somadas = []
 
     for i in range(len(alternativas_ordenadas.values())):
@@ -703,20 +662,11 @@ def _separa_primeiros_elementos(lista_elementos, idx):
     
     lista_separada = []
     lista_separada = lista_elementos[idx]
-    print('lista_separada', lista_separada)
-    
-    # for item in lista_elementos:
-    #     print('item', item)
-    #     print('item[0]', item[0])
-    #     lista_separada.append(item[idx])
         
     return lista_separada
 
 
 def _multiplicar_pelo_peso(lista_primeiros_elementos ,lista_pesos):
-    print('\n_+_+__+_+_+_+__+_+')
-    print(lista_primeiros_elementos)
-
     lista_multi = []
     for numint, peso in enumerate(lista_pesos):
   
@@ -727,16 +677,7 @@ def _multiplicar_pelo_peso(lista_primeiros_elementos ,lista_pesos):
 
 
 def _multiplica_final(lista_elementos, lista_pesos):
-    print('\n')
-    print('lista elementos', lista_elementos)
-    print('\n')
-    print('lista pesos', lista_pesos)
-    print('\n')
-
-
     num_elementos = len(lista_elementos)
-    print('\n  NUM ELEMENTOS =====  \n')
-    print(num_elementos)
     lista_somada = []
 
     for idx in range(num_elementos):
@@ -744,22 +685,9 @@ def _multiplica_final(lista_elementos, lista_pesos):
                                 lista_elementos, 
                                 idx)
 
-        print('\n +++++++++++++++')
-        print('lista_primeiros_el')
-        print(lista_primeiros_el)
-        print('\n +++++++++++++++')
-
-        # lista_multiplicada = _multiplicar_pelo_peso(
-        #     lista_elementos, lista_pesos
-        # )
         lista_multiplicada = _multiplicar_pelo_peso(
             lista_primeiros_el, lista_pesos
         )
-
-        print('\n +++++++++++++++')
-        print('lista_multiplicada')
-        print(lista_multiplicada)
-        print('\n +++++++++++++++')
 
         lista_somada.append(sum(lista_multiplicada))
 
