@@ -19,17 +19,15 @@
 
 {% if alternativas %}
 
-<table class="table table-striped" style="width: 70%; margin:0 auto">
+<table class="table table-striped" style="width: 50%; margin:0 auto; text-align: left">
     <thead>
         <tr>
-        <th scope="col">#</th>
         <th scope="col">Alternativa</th>
         </tr>
     </thead>
     <tbody>
         {% for alternativa in alternativas %}
             <tr>
-                <th scope="row">{{alternativa.id}}</th>
                 <td>{{alternativa.nome}}</td>
         
             </tr>
