@@ -98,6 +98,8 @@ def cadastraalternativas(request, projeto_id):
             alternativa_nova.projeto = projeto
             alternativa_nova.codigo = codigo
             alternativa_nova.save()
+        
+        return redirect('cadastraalternativas', projeto_id=projeto.id)
 
     else:
         alternativa_form = AlternativaForm()
