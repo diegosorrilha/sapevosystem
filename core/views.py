@@ -5,16 +5,6 @@ from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriter
 import collections
 
 def index(request):
-    """ 
-    1 - cadastrar somente nome do projeto e redirecionar para cadastrar decisores - OK
-    2 - cadastrar decisores - OK
-    3 - atualizar cadastro do projeto com decisores - OK
-    4 - cadastra Alternativas - OK
-    5 - cadastra Criterios - OK
-    6 - avalia Critérios - OK
-    7 - avalia Alternativas
-    8 - coloca resultado final da avaliação no projeto
-    """
     template_name = 'index.html'
     projetos = Projeto.objects.all()
 
@@ -289,18 +279,9 @@ def resultado(request, projeto_id):
 
     matrizes = []
     for decisor in decisores:
-        criterios_decisor = AvaliacaoCriterios.objects.filter(projeto=projeto_id, decisor=decisor.id)
-        print('\n \n CRITERIOS DECISOR\n')
-        for c in criterios_decisor:
-            print(c)
-        print('\n CRITERIOS DECISOR\n \n')    
+        criterios_decisor = AvaliacaoCriterios.objects.filter(projeto=projeto_id, decisor=decisor.id)  
         matriz = _gerar_matriz(qtd_criterios, criterios_decisor)
         matrizes.append(matriz)
-
-    print('\n \n MATRIZES CRITERIOSSSSSS\n')
-    for i in matrizes:
-        print(i)
-    print('\n MATRIZES CRITERIOSSSSSS\n \n')
 
     # calcular pesos dos decisores
     pesos_decisores = []
@@ -308,25 +289,17 @@ def resultado(request, projeto_id):
         peso_matriz = _normalizar(matriz)
         pesos_decisores.append(peso_matriz)
 
-    for p in pesos_decisores:
-        print('p' , p)
-    # print('PESOS DECISORES', pesos_decisores)
-
     # calcular o peso final 
     peso_final = _peso_criterios(pesos_decisores)
-
-    print('PESOS FINAL', peso_final)
 
     # cria tupla de criterio e peso para renderizar
     pesos_criterios = []
     pos_peso = 0
     peso_final_qt = len(peso_final)
-    print()
+    
     while pos_peso < peso_final_qt:
-        for criterio in criterios:        
-            print('entrando')
+        for criterio in criterios:
             pesos_criterios.append((criterio.nome, peso_final[pos_peso]))
-            # print(criterio.id)
             pos_peso += 1
 
     #### Alternativas ####
@@ -457,10 +430,6 @@ def _gerar_matriz(qtd_criterios, criterios_decisor):
         for i in lista[zero_p+1:]:
             lista.remove(i)
 
-    print('\n \n MATRIZ\n')
-    print(matriz_base)
-    print('\n MATRIZ\n \n')
-
     # separa os criterios em um dicionario
     dic_ = collections.OrderedDict()
     for i in range(1,qtd_criterios+1):
@@ -470,10 +439,6 @@ def _gerar_matriz(qtd_criterios, criterios_decisor):
     for i in criterios_decisor:
         k = i.criterios[:2]
         dic_[k].append(i.valor)
-
-    print('\n \n DIC_\n')
-    print(dic_)
-    print('\n DIC_\n \n')
 
     # completa a matriz com valores positivos
     matriz_com_positivos = _completa_matriz_com_positivos(matriz_base, dic_, qtd_criterios)
@@ -559,11 +524,6 @@ def _completa_matriz_com_negativos_alt(matriz_n, dic, qtd_criterios, criterios_d
 
 
 def _normalizar(lista_elementos):
-    print('\n=====FUNCAO _NORMALIZAR =====\n')
-    print(lista_elementos)
-    print('\n=====FUNCAO _NORMALIZAR =====\n')
-
-
     lista_final_normalizada = []
     lista_dos_somados = []
     lista_normalizada = []
