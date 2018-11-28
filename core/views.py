@@ -61,6 +61,7 @@ def cadastradecisores(request, projeto_id):
             _inclui_decisor_no_projeto(projeto, decisor_novo)
             decisor_novo.projeto = projeto
             decisor_novo.save()
+        return redirect('cadastradecisores', projeto_id=projeto.id)
 
     else:
         decisor_form = DecisorForm()
