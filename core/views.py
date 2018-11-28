@@ -358,11 +358,18 @@ def resultado(request, projeto_id):
     for k,v in alternativas_para_somar.items():
         alternativas_ordenadas[k] = []
 
+    for i in alternativas_para_somar.values():
+        print('i alternativas para somar',i)
+    # print(alternativas_para_somar)
+
     for k,v in alternativas_para_somar.items():
         for i in range(len(alternativas_para_somar)):
             alternativas_ordenadas[k].append(
                 _separa_alternativas(k, v, i)
             )
+
+    print('{{{{{{{{{{{{{{{{')
+    print('alternativas_ordenadas', alternativas_ordenadas)
 
     lista_somas = _soma_alternativa_por_criterio(alternativas_ordenadas)
 
@@ -640,9 +647,12 @@ def _normalizar_alternativas(lista_elementos):
 
 
 def _separa_alternativas(criterio, lista_elementos, idx):
+    num_el = len(lista_elementos[0])
     lista_separada = []
-    for item in lista_elementos:
-        lista_separada.append(item[idx])
+    
+    if idx < num_el:
+        for item in lista_elementos:
+            lista_separada.append(item[idx])
     return lista_separada
 
 
