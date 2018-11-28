@@ -302,6 +302,18 @@ def resultado(request, projeto_id):
     # calcular o peso final 
     peso_final = _peso_criterios(pesos_decisores)
 
+    # cria tuplo de criterio e peso para renderizar
+    pesos_criterios = []
+    pos_peso = 0
+    peso_final_qt = len(peso_final)
+    print()
+    while pos_peso < peso_final_qt:
+        for criterio in criterios:        
+            print('entrando')
+            pesos_criterios.append((criterio.nome, peso_final[pos_peso]))
+            # print(criterio.id)
+            pos_peso += 1
+
     #### Alternativas ####
 
     #gera matriz de alternativa para cada decisor
@@ -369,7 +381,8 @@ def resultado(request, projeto_id):
             )
 
     print('{{{{{{{{{{{{{{{{')
-    print('alternativas_ordenadas', alternativas_ordenadas)
+    for i in alternativas_ordenadas.values():
+        print('alternativas_ordenadas', i)
 
     lista_somas = _soma_alternativa_por_criterio(alternativas_ordenadas)
 
@@ -391,8 +404,7 @@ def resultado(request, projeto_id):
     return render(request, template_name, {
         'projeto_nome': projeto.nome,
         'resultado': resultado,
-        'peso_final': peso_final,
-        'criterios': criterios,
+        'pesos_criterios': pesos_criterios,
         })
 
 
