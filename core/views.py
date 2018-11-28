@@ -33,6 +33,11 @@ def index(request):
                 'projetos': projetos})
 
 
+def metodo(request):
+    template_name = 'metodo.html'
+    return render(request, template_name)
+
+
 def projeto(request, projeto_id):
     template_name = 'projeto.html'
     projeto = Projeto.objects.get(id=projeto_id)

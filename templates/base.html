@@ -24,8 +24,13 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
+                {% url '/' as current_url %}
+                <li class="nav-item {% if request.get_full_path == current_url %}active{% endif %}">
                     <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+                {% url 'metodo' as current_url %}
+                <li class="nav-item {% if request.get_full_path == current_url %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'metodo' %}">Método <span class="sr-only">(current)</span></a>
                 </li>
             </ul>
         </div>

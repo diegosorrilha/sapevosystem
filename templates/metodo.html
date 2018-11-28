@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block container %}
+
+<h1>SAPEVO-M - Método</h1>
+<p class="tagline">A multicriteria ranking with ordinal data.</p>
+
+
+<p>
+    O método SAPEVO-M (Simple Aggregation of Preferences Expressed by Ordinal Vectors –Multi Decision Makers], 
+    proposto por Gomes e Santos [2018] é uma nova versão do método original SAPEVO [Gomes e Gomes 1997], 
+    que possibilita a utilização de múltiplos decisores. Ademais, introduziu um processo de normalização das matrizes de avaliação, 
+    incrementando a sua consistência.
+</p>
+<p>
+    O método consiste, basicamente, em dois processos:
+    <br><br>
+    Primeiramente, a transformação ordinal da preferência entre critérios, expressada por um vetor representando os pesos dos critérios. 
+    <br>
+    O segundo processo é a transformação ordinal da preferência entre alternativas dentro de um determinado conjunto de critérios. 
+    <br>
+    Ao serem agregadas as preferências para todos os critérios, neste segundo processo, é gerada uma matriz de avaliação. 
+    O vetor resultante da multiplicação entre o vetor peso e a matriz  de avaliação, indicará qual deverá ser a ordenação entre as alternativas.
+    <br><br>
+    As informações de preferência são denotadas por uma série de comparações pareadas entre as alternativas. A relação entre as alternativas é expressa em uma escala de sete pontos, conforme modelo da tabela, na qual são mensuradas, relativamente, a importância entre as alternativas. A partir da avaliação entre alternativas, é obtido uma matriz com a representação numérica correspondente.
+</p>
+
+<hr>
+
+
+<br>
+<h6>Tabela 1:</h6>
+<table class="table table-striped" style="width: 70%; margin:0 auto">
+    <thead>
+        <tr>
+        <th scope="col">Expressão Linguística</th>
+        <th scope="col">Pontuação</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+            <td>Absolutamente Pior / Absolutamente Menos Importante</td>
+            <td>-3</td>
+        </tr>
+        <tr>
+            <td>Muito Pior / muito Menos Importante</td>
+            <td>-2</td>
+        </tr>
+        <tr>
+            <td>Pior / Menos Importante</td>
+            <td>-1</td>
+        </tr>
+        <tr>
+            <td>Igual ou Equivalente / tão importante quanto</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>Melhor / Mais Importante</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>Muito Melhor / muito Mais Importante</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>Absolutamente Melhor / absolutamente Mais Importante</td>
+            <td>3</td>
+        </tr>
+
+    </tbody>
+</table>
+
+
+{% endblock %}
