@@ -21,12 +21,12 @@
         <br>
 
         {% for criterio in criterios %}
-            <h4>Critério {{criterio.id}} - {{criterio.nome}}</h4>
+            <h4>Critério - {{criterio.nome}}</h4>
             
             <div id="alternativas">
                 {% for alternativas in alternativas_combinadas %}
                     
-                    <strong>{{alternativas.0}} VS {{alternativas.1}} ({{alternativas.2}}{{alternativas.3}})</strong>
+                    <strong>{{alternativas.0}} VS {{alternativas.1}}</strong>
                     <br>
                     <input style="margin-left: 1em" type="radio" name="c{{criterio.id}}{{alternativas.2}}{{alternativas.3}}" value=-3> Absolutamente Pior
                     <input style="margin-left: 1em" type="radio" name="c{{criterio.id}}{{alternativas.2}}{{alternativas.3}}" value=-2> Muito Pior
@@ -34,7 +34,7 @@
                     <input style="margin-left: 1em" type="radio" name="c{{criterio.id}}{{alternativas.2}}{{alternativas.3}}" value=0> Equivalente
                     <input style="margin-left: 1em" type="radio" name="c{{criterio.id}}{{alternativas.2}}{{alternativas.3}}" value=1> Melhor
                     <input style="margin-left: 1em" type="radio" name="c{{criterio.id}}{{alternativas.2}}{{alternativas.3}}" value=2> Muito melhor
-                    <input style="margin-left: 1em" type="radio" name="c{{criterio.id}}{{alternativas.2}}{{alternativas.3}}" value=3> Absolu. melhor
+                    <input style="margin-left: 1em" type="radio" name="c{{criterio.id}}{{alternativas.2}}{{alternativas.3}}" value=3> Absolutamente melhor
                     <br>
                     <br>
                 {% endfor %}
