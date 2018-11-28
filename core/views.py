@@ -5,16 +5,6 @@ from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriter
 import collections
 
 def index(request):
-    """ 
-    1 - cadastrar somente nome do projeto e redirecionar para cadastrar decisores - OK
-    2 - cadastrar decisores - OK
-    3 - atualizar cadastro do projeto com decisores - OK
-    4 - cadastra Alternativas - OK
-    5 - cadastra Criterios - OK
-    6 - avalia Critérios - OK
-    7 - avalia Alternativas
-    8 - coloca resultado final da avaliação no projeto
-    """
     template_name = 'index.html'
     projetos = Projeto.objects.all()
 
@@ -289,7 +279,7 @@ def resultado(request, projeto_id):
 
     matrizes = []
     for decisor in decisores:
-        criterios_decisor = AvaliacaoCriterios.objects.filter(projeto=projeto_id, decisor=decisor.id)
+        criterios_decisor = AvaliacaoCriterios.objects.filter(projeto=projeto_id, decisor=decisor.id)  
         matriz = _gerar_matriz(qtd_criterios, criterios_decisor)
         matrizes.append(matriz)
 
@@ -301,6 +291,16 @@ def resultado(request, projeto_id):
 
     # calcular o peso final 
     peso_final = _peso_criterios(pesos_decisores)
+
+    # cria tupla de criterio e peso para renderizar
+    pesos_criterios = []
+    pos_peso = 0
+    peso_final_qt = len(peso_final)
+    
+    while pos_peso < peso_final_qt:
+        for criterio in criterios:
+            pesos_criterios.append((criterio.nome, peso_final[pos_peso]))
+            pos_peso += 1
 
     #### Alternativas ####
 
@@ -369,7 +369,8 @@ def resultado(request, projeto_id):
             )
 
     print('{{{{{{{{{{{{{{{{')
-    print('alternativas_ordenadas', alternativas_ordenadas)
+    for i in alternativas_ordenadas.values():
+        print('alternativas_ordenadas', i)
 
     lista_somas = _soma_alternativa_por_criterio(alternativas_ordenadas)
 
@@ -391,8 +392,7 @@ def resultado(request, projeto_id):
     return render(request, template_name, {
         'projeto_nome': projeto.nome,
         'resultado': resultado,
-        'peso_final': peso_final,
-        'criterios': criterios,
+        'pesos_criterios': pesos_criterios,
         })
 
 
@@ -431,7 +431,7 @@ def _gerar_matriz(qtd_criterios, criterios_decisor):
             lista.remove(i)
 
     # separa os criterios em um dicionario
-    dic_ = {}
+    dic_ = collections.OrderedDict()
     for i in range(1,qtd_criterios+1):
         key = 'c{}'.format(i)
         dic_[key] = []

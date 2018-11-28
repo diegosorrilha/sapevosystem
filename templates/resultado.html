@@ -4,10 +4,10 @@
 <h1>Resultado | Projeto {{projeto_nome}}</h1>
 
 <h3>Pesos</h3>
+{% for peso_criterio in pesos_criterios %}
+    <p>Critério - <strong>{{peso_criterio.0}}</strong> - {{peso_criterio.1 }}</p>
 
-<p>Critério - <strong>{{criterios.0}}</strong> - {{peso_final.0}}</p>
-<p>Critério - <strong>{{criterios.1}}</strong> - {{peso_final.1}}</p>
-<p>Critério - <strong>{{criterios.2}}</strong> - {{peso_final.2}}</p>
+{% endfor %}
 
 <hr>
 
