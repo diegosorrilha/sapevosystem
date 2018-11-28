@@ -18,17 +18,15 @@
 
 {% if decisores %}
 
-<table class="table table-striped" style="width: 70%; margin:0 auto">
+<table class="table table-striped" style="width: 50%; margin:0 auto; text-align: left">
     <thead>
         <tr>
-        <th scope="col">#</th>
-        <th scope="col">Decisor</th>
+        <th scope="col">Decisores</th>
         </tr>
     </thead>
     <tbody>
         {% for decisor in decisores %}
             <tr>
-                <th scope="row">{{decisor.id}}</th>
                 <td>{{decisor.nome}}</td>
         
             </tr>

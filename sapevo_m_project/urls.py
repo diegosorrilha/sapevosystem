@@ -19,7 +19,8 @@ from core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index),
+    path('', views.index, name='/'),
+    path('metodo/', views.metodo, name='metodo'),
     path('projeto/<projeto_id>/', views.projeto, name='projeto'),
     path('cadastradecisores/<projeto_id>/', views.cadastradecisores, name='cadastradecisores'),
     path('cadastraalternativas/<projeto_id>/', views.cadastraalternativas, name='cadastraalternativas'),

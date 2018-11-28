@@ -33,6 +33,11 @@ def index(request):
                 'projetos': projetos})
 
 
+def metodo(request):
+    template_name = 'metodo.html'
+    return render(request, template_name)
+
+
 def projeto(request, projeto_id):
     template_name = 'projeto.html'
     projeto = Projeto.objects.get(id=projeto_id)
@@ -61,6 +66,7 @@ def cadastradecisores(request, projeto_id):
             _inclui_decisor_no_projeto(projeto, decisor_novo)
             decisor_novo.projeto = projeto
             decisor_novo.save()
+        return redirect('cadastradecisores', projeto_id=projeto.id)
 
     else:
         decisor_form = DecisorForm()
@@ -97,6 +103,8 @@ def cadastraalternativas(request, projeto_id):
             alternativa_nova.projeto = projeto
             alternativa_nova.codigo = codigo
             alternativa_nova.save()
+        
+        return redirect('cadastraalternativas', projeto_id=projeto.id)
 
     else:
         alternativa_form = AlternativaForm()
