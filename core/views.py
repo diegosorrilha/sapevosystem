@@ -305,20 +305,128 @@ def resultado(request, projeto_id):
     #### Alternativas ####
 
     #gera matriz de alternativa para cada decisor
-    matrizes_alt = collections.OrderedDict()
+    # matrizes_alt = collections.OrderedDict()
+    # for decisor in decisores:
+    #     k1 = 'd{}'.format(decisor.id)
+    #     for criterio in criterios:
+    #         k2 = '{}'.format(criterio.codigo)
+    #         matrizes_alt[k1] = {k2:[]}
+
+    # count=1
+    # for decisor in decisores:
+    #     for criterio in criterios:
+    #         criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=criterio.id)
+    #         if criterios_decisor:
+    #             # print('AGORA TEM ESSA BOSTA!')
+    #             # print(count)
+    #             count+=1
+    #             matriz = _gerar_matriz_alt(qtd_alternativas, criterios_decisor)
+    #             k1 = 'd{}'.format(decisor.id)
+    #             k2 = '{}'.format(criterio.codigo)
+    #             print('=== k2 ===> ', k2)
+    #             matrizes_alt[k1][k2] = matriz
+
+    ############
+    ### Ideia ##
+    ############
+    # {d1: c1 [
+    #     a1[1,2,3,4],
+    #     a2[5,4,3,2],
+    #     a3[8,7,6,5],
+    #     a4[5,6,7,8]
+    # ]
+
+    # 1 - organizar avaliacoes poe decisor e criterio
+    # 2 - gerar matrizes
+    # - - - - prestar atenção na geração de matrizes (dicionario)
+
+
+    #organiza as avaliacoes da seguinte forma
+    #{d1: {c1} [
+    #     {a1}[1,2,3,4],
+    #     {a2}[5,4,3,2],
+    #     {a3}[8,7,6,5],
+    #     {a4}[5,6,7,8]
+    # ]
+    avaliacoes_alt_organizadas = collections.OrderedDict()
     for decisor in decisores:
         k1 = 'd{}'.format(decisor.id)
-        for criterio in criterios:
-            k2 = '{}'.format(criterio.codigo)
-            matrizes_alt[k1] = {k2:[]}
+        avaliacoes_alt_organizadas[k1] = []
+        for i in range(qtd_alternativas):
+            avaliacoes_alt_organizadas[k1].append(list())
 
-    for decisor in decisores:
-        for criterio in criterios:
-            criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=criterio.id)
-            matriz = _gerar_matriz_alt(qtd_alternativas, criterios_decisor)
-            k1 = 'd{}'.format(decisor.id)
-            k2 = '{}'.format(criterio.codigo)
-            matrizes_alt[k1][k2] = matriz
+    # prepara lista dentro das avaliacoes
+    for k,i in avaliacoes_alt_organizadas.items():
+        for i in range(qtd_alternativas):
+            c = 0
+            while c < qtd_alternativas:
+                avaliacoes_alt_organizadas[k][i].append(list())
+                c += 1
+        
+    
+    print('EiTA MENINAAAAA')
+    for k, v in avaliacoes_alt_organizadas.items():
+        print(k)
+        for i in v:
+            print(i)
+
+
+    avaliacoes_alt = AvaliacaoAlternativas.objects.filter(projeto=projeto_id)
+
+    for avaliacao in avaliacoes_alt:
+        texto = '{} - {} - {} - {}'.format(
+                                    avaliacao.decisor,
+                                    avaliacao.criterio,
+                                    avaliacao.criterio.codigo,
+                                    avaliacao.alternativas,
+                                )
+        # print(texto)
+        # print(avaliacao.decisor)
+        # print(avaliacao.criterio, avaliacao.criterio.codigo)
+        # print(avaliacao.alternativas)
+        # print(avaliacao.valor)
+        # matriz = _gerar_matriz_alt(qtd_alternativas, avaliacao)
+        k1 = 'd{}'.format(avaliacao.decisor.id)
+        criterio_num = avaliacao.alternativas[-3]
+        indice = int(criterio_num)-1
+        for l in avaliacoes_alt_organizadas[k1]:
+            # print(k1, 'xuxu beleza', l)
+            l[indice].append(avaliacao.valor)
+            
+        # print('indice - alternativa', indice)
+        # print('hr =========\n')
+        # avaliacoes_alt_organizadas[k1][indice].append(avaliacao.valor)
+
+        # matrizes_alt[k1].append(avaliacao.valor)
+
+    print('aaahhh lelek lek - avaliacoes_alt_organizadas')
+    for k,v in avaliacoes_alt_organizadas.items():
+        print(k)
+        for i in v:
+            print(i)
+    
+    # matrizes_alt = collections.OrderedDict()
+    # for decisor in decisores:
+    #     k1 = 'd{}'.format(decisor.id)
+    #     matrizes_alt[k1] = []
+    
+    # for decisor in decisores:
+    #     for criterio in criterios:
+    #         criterios_decisor = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=decisor.id, criterio=criterio.id)
+    #         if criterios_decisor:
+    #             matriz = _gerar_matriz_alt(qtd_alternativas, criterios_decisor)
+    #             k1 = 'd{}'.format(decisor.id)
+    #             k2 = '{}'.format(criterio.codigo)
+    #             matrizes_alt[k1][k2] = matriz
+
+    #### ERRO:
+    #### matrizes_alt com valores zerados
+    #### 'c4': [[0], [0], [0], [0]], 'c3': [[0], [0], [0], [0]]
+    #### 'c3' ta vindo com queryset vazio
+    #### 'c4' vem vazio tb
+    print('\n MATRIZES_ALT')
+    print(matrizes_alt)
+    print('\n fim MATRIZES_ALT\n')
 
     #gera matriz de alternativa normalizadas
     matrizes_alt_normalizadas = {}
@@ -328,7 +436,6 @@ def resultado(request, projeto_id):
             k1 = 'd{}'.format(decisor.id)
             k2 = '{}'.format(criterio.codigo)
             matrizes_alt_normalizadas[k1] = {}
-
 
     for decisor in decisores:
         for criterio in criterios:
@@ -450,6 +557,12 @@ def _gerar_matriz(qtd_criterios, criterios_decisor):
 
 
 def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
+    print('\n FUNCAO _GERAR_MATRIZ_ALT - inicio')
+    print('qtd_criterios', qtd_criterios)
+    print('criterios_decisor', criterios_decisor)
+    # print('criterios_decisor', criterios_decisor)
+
+
     ### 1 - gerar matriz base
     matriz_base = []
     for i in range(qtd_criterios):
@@ -469,6 +582,11 @@ def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
         for i in lista[zero_p+1:]:
             lista.remove(i)
 
+    print('\n MATRIZ BASE sem zeros')
+    print(matriz_base)
+    print('\n fim MATRIZES BASE\n')
+
+
     # separa os criterios em um dicionario
     dic_ = collections.OrderedDict()
     # dic_ = {}
@@ -477,14 +595,20 @@ def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
         dic_[key] = []
 
     for i in criterios_decisor:
-        k = i.alternativas[2:4]
-        dic_[k].append(i.valor)
+        print(i.alternativas[2:4])
+        print(i.valor)
+        k = i.alternativas[2:4] # a1
+        dic_[k].append(i.valor) # 5
 
     # completa a matriz com valores positivos
     matriz_com_positivos = _completa_matriz_com_positivos(matriz_base, dic_, qtd_criterios)
     
     ### 4 - gerar nova matriz com valores negativos antes do zero
     matriz_final = _completa_matriz_com_negativos_alt(matriz_com_positivos, dic_, qtd_criterios, criterios_decisor)
+
+    print('matriz_final', matriz_final)
+
+    print('\n FUNCAO _GERAR_MATRIZ_ALT - fim')
 
     return matriz_final
 
@@ -627,6 +751,10 @@ def _gerar_combinacoes_criterios(criterios):
 
 
 def _normalizar_alternativas(lista_elementos):
+    # print('\n NORMALIZAR ALTERNATIVAS\n')
+    # print('lista elementos', lista_elementos)
+
+
     lista_dos_somados = []
     lista_normalizada = []
     
@@ -642,6 +770,10 @@ def _normalizar_alternativas(lista_elementos):
             regular = ((elemento_da_soma - menor)/(maior - menor))
 
         lista_normalizada.append(regular)
+
+    # print('lista_normalizada', lista_normalizada)
+    # print('final: NORMALIZAR ALTERNATIVAS')
+
 
     return lista_normalizada
 
