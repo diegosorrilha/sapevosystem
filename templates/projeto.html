@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block container %}
 
-<h1>Projeto {{projeto.nome}}</h1>
+<h1 class="edit" id="{{projeto.id}}" name="">{{projeto.nome}}</h1>
 
 <hr>
 
@@ -73,12 +73,12 @@
                 <tr>
                     <th scope="row">{{criterio.id}}</th>
                     <td>{{criterio.nome}}</td>
-            
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 {% endif %}
+
 
 {% endblock %}
