@@ -17,10 +17,10 @@
             </tr>
         </thead>
         <tbody>
-            {% for decisore in decisores %}
+            {% for decisor in decisores %}
                 <tr>
-                    <th scope="row">{{decisore.id}}</th>
-                    <td>{{decisore.nome}}</td>
+                    <th scope="row">{{decisor.id}}</th>
+                    <td><span class="edit" id="decisor:{{decisor.id}}" name="">{{decisor.nome}}</span></td>
             
                 </tr>
             {% endfor %}

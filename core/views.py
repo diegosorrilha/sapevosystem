@@ -51,10 +51,15 @@ def editardados(request):
     
     if tipo == 'projeto':
         projeto = Projeto.objects.get(id=_id)
-        projeto.nome = nome
+        projeto.nome = _nome
         projeto.save()
 
-    return HttpResponse(projeto.nome)
+    elif tipo == 'decisor':
+        decisor = Decisor.objects.get(id=_id)
+        decisor.nome = nome
+        decisor.save()
+
+    return HttpResponse(nome)
 
 
 def cadastradecisores(request, projeto_id):
