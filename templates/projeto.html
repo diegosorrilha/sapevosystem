@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block container %}
 
-<h1 class="edit" id="{{projeto.id}}" name="">{{projeto.nome}}</h1>
+<h1 class="edit" id="projeto:{{projeto.id}}" name="">{{projeto.nome}}</h1>
 
 <hr>
 
@@ -17,10 +17,10 @@
             </tr>
         </thead>
         <tbody>
-            {% for decisore in decisores %}
+            {% for decisor in decisores %}
                 <tr>
-                    <th scope="row">{{decisore.id}}</th>
-                    <td>{{decisore.nome}}</td>
+                    <th scope="row">{{decisor.id}}</th>
+                    <td><span class="edit" id="decisor:{{decisor.id}}" name="">{{decisor.nome}}</span></td>
             
                 </tr>
             {% endfor %}
@@ -46,7 +46,7 @@
             {% for alternativa in alternativas %}
                 <tr>
                     <th scope="row">{{alternativa.id}}</th>
-                    <td>{{alternativa.nome}}</td>
+                    <td><span class="edit" id="alternativa:{{alternativa.id}}" name="">{{alternativa.nome}}</span></td>
             
                 </tr>
             {% endfor %}
@@ -72,7 +72,7 @@
             {% for criterio in criterios %}
                 <tr>
                     <th scope="row">{{criterio.id}}</th>
-                    <td>{{criterio.nome}}</td>
+                    <td><span class="edit" id="criterio:{{criterio.id}}" name="">{{criterio.nome}}</span></td>
                 </tr>
             {% endfor %}
         </tbody>
