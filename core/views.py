@@ -42,6 +42,16 @@ def projeto(request, projeto_id):
                 'alternativas': alternativas,
                 'criterios': criterios})
 
+def editarprojeto(request):
+    projeto_id = request.POST['projetoId']
+    nome = request.POST['nome']
+
+    projeto = Projeto.objects.get(id=projeto_id)
+    projeto.nome = nome
+    projeto.save()
+
+    return HttpResponse(projeto.nome)
+
 
 def cadastradecisores(request, projeto_id):
     projeto = Projeto.objects.get(id=projeto_id)
