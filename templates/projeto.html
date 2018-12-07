@@ -72,7 +72,7 @@
             {% for criterio in criterios %}
                 <tr>
                     <th scope="row">{{criterio.id}}</th>
-                    <td>{{criterio.nome}}</td>
+                    <td><span class="edit" id="criterio:{{criterio.id}}" name="">{{criterio.nome}}</span></td>
                 </tr>
             {% endfor %}
         </tbody>

@@ -64,6 +64,11 @@ def editardados(request):
         alternativa.nome = nome
         alternativa.save()
 
+    elif tipo == 'criterio':
+        criterio = Criterio.objects.get(id=_id)
+        criterio.nome = nome
+        criterio.save()
+
     return HttpResponse(nome)
 
 
