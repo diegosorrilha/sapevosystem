@@ -177,9 +177,9 @@
         var csrftoken = getCookie('csrftoken');
         
         $(document).ready(function() {
-            $('.edit').editable('{% url "editarprojeto" %}', {
+            $('.edit').editable('{% url "editardados" %}', {
                 // type: 'POST',
-                id: 'projetoId',
+                id: 'tipoId',
                 name: 'nome',
                 submit : 'Salvar',
                 cancel : 'Cancelar',
