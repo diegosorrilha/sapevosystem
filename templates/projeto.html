@@ -46,7 +46,7 @@
             {% for alternativa in alternativas %}
                 <tr>
                     <th scope="row">{{alternativa.id}}</th>
-                    <td>{{alternativa.nome}}</td>
+                    <td><span class="edit" id="alternativa:{{alternativa.id}}" name="">{{alternativa.nome}}</span></td>
             
                 </tr>
             {% endfor %}

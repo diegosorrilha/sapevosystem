@@ -59,6 +59,11 @@ def editardados(request):
         decisor.nome = nome
         decisor.save()
 
+    elif tipo == 'alternativa':
+        alternativa = Alternativa.objects.get(id=_id)
+        alternativa.nome = nome
+        alternativa.save()
+
     return HttpResponse(nome)
 
 
