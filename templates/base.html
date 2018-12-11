@@ -27,6 +27,18 @@
 
         .navbar-toggle {top:10px}
 
+        .edit {
+            cursor: pointer;
+        }
+
+        .edit input{
+            margin: 0 10px;
+        }
+
+        .edit button{
+            margin: 0 3px;
+        }
+
         .sapevoweb-footer {
             padding: 1rem 0 0.1rem;
             color: #999;
@@ -116,15 +128,19 @@
             
         </p>
         <p>
-            To cite this software: TEIXEIRA, Luiz Frederico Horácio de Souza de Barros; SANTOS, Marcos (2018), SapevoWeb Software (v.1), Instituto Militar de Engenharia, URL http://www.sapevoweb.com
+            To cite this software: TEIXEIRA, Luiz Frederico Horácio de Souza de Barros; SANTOS, Marcos dos; GOMES, Carlos Francisco Simões. <br>
+            SapevoWeb Software (v.1). <br>
+            Desenvolvido no Instituto Militar de Engenharia (IME), no Centro de Análises de Sistemas Navais (CASNAV) e na Universidade Federal Fluminense (UFF). <br>
+            http://www.sapevoweb.com.
         </p>
         <p>
-            TEIXEIRA, Luiz Frederico Horácio de Souza de Barros; SANTOS, Marcos <br>
+            TEIXEIRA, Luiz Frederico Horácio de Souza de Barros; SANTOS, Marcos dos; GOMES, Carlos Francisco Simões. <br>
             Instituto Militar de Engenharia - IME <br>
             Seção de Engenharia de Computação - SE/8 <br>
             Programa de Pós-Graduação em Sistemas e Computação <br>
             <a href="mailto:luiz_frederico@id.uff.br">luiz_frederico@id.uff.br</a> <br>
-            <a href="mailto:marcosdossantos_doutorado_uff@yahoo.com">marcosdossantos_doutorado_uff@yahoo.com</a>
+            <a href="mailto:marcosdossantos_doutorado_uff@yahoo.com">marcosdossantos_doutorado_uff@yahoo.com</a> <br>
+            <a href="mailto:cfsg1@bol.com.br">cfsg1@bol.com.br</a>
             <br>
             - 2018 -
         </p>
@@ -133,8 +149,53 @@
                 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+    <!-- Jeditable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jeditable.js/2.0.6/jquery.jeditable.min.js"></script>
+
+    <script>
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+        
+        $(document).ready(function() {
+            $('.edit').editable('{% url "editardados" %}', {
+                // type: 'POST',
+                id: 'tipoId',
+                name: 'nome',
+                submit : 'Salvar',
+                cancel : 'Cancelar',
+                cancelcssclass : 'btn btn-danger',
+                submitcssclass : 'btn btn-success',
+                tooltip   : 'Clique para editar…',
+                ajaxoptions: {
+                    'beforeSend': function(xhr) {
+                        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                    },
+                }
+            }
+            );
+        });
+
+    </script>
+
     {% block custom_js %}{% endblock %}
 </body>

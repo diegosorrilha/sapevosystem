@@ -43,6 +43,35 @@ def projeto(request, projeto_id):
                 'criterios': criterios})
 
 
+def editardados(request):
+    nome = request.POST['nome']
+    tipo_id = request.POST['tipoId'].split(':') 
+    tipo = tipo_id[0]
+    _id,  = tipo_id[1]
+    
+    if tipo == 'projeto':
+        projeto = Projeto.objects.get(id=_id)
+        projeto.nome = _nome
+        projeto.save()
+
+    elif tipo == 'decisor':
+        decisor = Decisor.objects.get(id=_id)
+        decisor.nome = nome
+        decisor.save()
+
+    elif tipo == 'alternativa':
+        alternativa = Alternativa.objects.get(id=_id)
+        alternativa.nome = nome
+        alternativa.save()
+
+    elif tipo == 'criterio':
+        criterio = Criterio.objects.get(id=_id)
+        criterio.nome = nome
+        criterio.save()
+
+    return HttpResponse(nome)
+
+
 def cadastradecisores(request, projeto_id):
     projeto = Projeto.objects.get(id=projeto_id)
     template_name = 'cadastra_decisores.html'
