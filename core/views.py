@@ -320,6 +320,7 @@ def resultado(request, projeto_id):
 
     # calcular o peso final 
     peso_final = _peso_criterios(pesos_decisores)
+    print('PESO FINALLLLLLL', peso_final)
 
     # cria tupla de criterio e peso para renderizar
     pesos_criterios = []
@@ -331,6 +332,47 @@ def resultado(request, projeto_id):
             pesos_criterios.append((criterio.nome, peso_final[pos_peso]))
             pos_peso += 1
 
+    #gera dicionario de matrizes
+    d_matrizes = {}
+    for decisor in decisores:
+        k = 'D{}'.format(decisor.id)
+        d_matrizes[k] = []
+
+    # gera dicionario de avaliacoes
+    d_avaliacoes = {}
+    for decisor in decisores:
+        k = 'D{}'.format(decisor.id)
+        d_avaliacoes[k] = []
+        for i in range(qtd_alternativas):
+            d_avaliacoes[k].append(list())
+
+    print('ZZZZZZZZ')
+    print(d_avaliacoes)
+    print('ZZZZZZZZ')
+
+    lista_criterios = []
+    for c in criterios:
+        lista_criterios.append(c.codigo)      
+
+    # avaliacoes_alt = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=14, criterio__codigo='c4').order_by('alternativas')
+    avaliacoes_alt = AvaliacaoAlternativas.objects.filter(projeto=projeto_id).order_by('alternativas')
+
+    for i in avaliacoes_alt:
+        k = 'D{}'.format(i.decisor.id)
+        indice = lista_criterios.index(i.criterio.codigo)
+        print('indice', indice)
+        d_avaliacoes[k][indice].append(i.valor)
+    
+    for k, v in d_avaliacoes.items():
+        print(k)
+        for i in v:
+            print(i)
+
+
+
+
+
+    ####### Codigo antigo de alternativas #######
     #### Alternativas ####
 
     #gera matriz de alternativa para cada decisor
@@ -384,6 +426,10 @@ def resultado(request, projeto_id):
         for i in range(qtd_alternativas):
             avaliacoes_alt_organizadas[k1].append(list())
 
+    # print('\nAAAAAAAAAAA>>>>>>>>>>>>>>>>>')
+    # print(avaliacoes_alt_organizadas)
+    # print('AAAAAAAAAAA>>>>>>>>>>>>>>>>>\n')
+
     # prepara lista dentro das avaliacoes
     for k,i in avaliacoes_alt_organizadas.items():
         for i in range(qtd_alternativas):
@@ -393,27 +439,27 @@ def resultado(request, projeto_id):
                 c += 1
         
     
-    print('EiTA MENINAAAAA')
-    for k, v in avaliacoes_alt_organizadas.items():
-        print(k)
-        for i in v:
-            print(i)
+    # print('\navaliacoes_alt_organizadas')
+    # for k, v in avaliacoes_alt_organizadas.items():
+    #     print(k, v)
+    # print(' avaliacoes_alt_organizadas\n')
 
 
     avaliacoes_alt = AvaliacaoAlternativas.objects.filter(projeto=projeto_id)
 
     for avaliacao in avaliacoes_alt:
-        texto = '{} - {} - {} - {}'.format(
-                                    avaliacao.decisor,
-                                    avaliacao.criterio,
-                                    avaliacao.criterio.codigo,
-                                    avaliacao.alternativas,
-                                )
+        
+    #     texto = 'D{} - {}'.format(
+    #                                 avaliacao.decisor.id,
+    #                                 # avaliacao.criterio,
+    #                                 # avaliacao.criterio.codigo,
+    #                                 # avaliacao.alternativas,
+    #                                 avaliacao.valor,
+                                # )
+        # print('=======>>>>>>')
         # print(texto)
-        # print(avaliacao.decisor)
-        # print(avaliacao.criterio, avaliacao.criterio.codigo)
-        # print(avaliacao.alternativas)
-        # print(avaliacao.valor)
+        # print('=======>>>>>>\n')
+        
         # matriz = _gerar_matriz_alt(qtd_alternativas, avaliacao)
         k1 = 'd{}'.format(avaliacao.decisor.id)
         criterio_num = avaliacao.alternativas[-3]
@@ -428,11 +474,11 @@ def resultado(request, projeto_id):
 
         # matrizes_alt[k1].append(avaliacao.valor)
 
-    print('aaahhh lelek lek - avaliacoes_alt_organizadas')
-    for k,v in avaliacoes_alt_organizadas.items():
-        print(k)
-        for i in v:
-            print(i)
+    # print('aaahhh lelek lek - avaliacoes_alt_organizadas')
+    # for k,v in avaliacoes_alt_organizadas.items():
+    #     print(k)
+    #     for i in v:
+    #         print(i)
     
     # matrizes_alt = collections.OrderedDict()
     # for decisor in decisores:
@@ -453,9 +499,9 @@ def resultado(request, projeto_id):
     #### 'c4': [[0], [0], [0], [0]], 'c3': [[0], [0], [0], [0]]
     #### 'c3' ta vindo com queryset vazio
     #### 'c4' vem vazio tb
-    print('\n MATRIZES_ALT')
-    print(matrizes_alt)
-    print('\n fim MATRIZES_ALT\n')
+    # print('\n MATRIZES_ALT')
+    # print(matrizes_alt)
+    # print('\n fim MATRIZES_ALT\n')
 
     #gera matriz de alternativa normalizadas
     matrizes_alt_normalizadas = {}
@@ -494,8 +540,8 @@ def resultado(request, projeto_id):
     for k,v in alternativas_para_somar.items():
         alternativas_ordenadas[k] = []
 
-    for i in alternativas_para_somar.values():
-        print('i alternativas para somar',i)
+    # for i in alternativas_para_somar.values():
+    #     print('i alternativas para somar',i)
     # print(alternativas_para_somar)
 
     for k,v in alternativas_para_somar.items():
@@ -504,9 +550,9 @@ def resultado(request, projeto_id):
                 _separa_alternativas(k, v, i)
             )
 
-    print('{{{{{{{{{{{{{{{{')
-    for i in alternativas_ordenadas.values():
-        print('alternativas_ordenadas', i)
+    # print('{{{{{{{{{{{{{{{{')
+    # for i in alternativas_ordenadas.values():
+    #     print('alternativas_ordenadas', i)
 
     lista_somas = _soma_alternativa_por_criterio(alternativas_ordenadas)
 
@@ -586,9 +632,9 @@ def _gerar_matriz(qtd_criterios, criterios_decisor):
 
 
 def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
-    print('\n FUNCAO _GERAR_MATRIZ_ALT - inicio')
-    print('qtd_criterios', qtd_criterios)
-    print('criterios_decisor', criterios_decisor)
+    # print('\n FUNCAO _GERAR_MATRIZ_ALT - inicio')
+    # print('qtd_criterios', qtd_criterios)
+    # print('criterios_decisor', criterios_decisor)
     # print('criterios_decisor', criterios_decisor)
 
 
@@ -611,9 +657,9 @@ def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
         for i in lista[zero_p+1:]:
             lista.remove(i)
 
-    print('\n MATRIZ BASE sem zeros')
-    print(matriz_base)
-    print('\n fim MATRIZES BASE\n')
+    # print('\n MATRIZ BASE sem zeros')
+    # print(matriz_base)
+    # print('\n fim MATRIZES BASE\n')
 
 
     # separa os criterios em um dicionario
@@ -624,8 +670,8 @@ def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
         dic_[key] = []
 
     for i in criterios_decisor:
-        print(i.alternativas[2:4])
-        print(i.valor)
+        # print(i.alternativas[2:4])
+        # print(i.valor)
         k = i.alternativas[2:4] # a1
         dic_[k].append(i.valor) # 5
 
@@ -635,9 +681,9 @@ def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
     ### 4 - gerar nova matriz com valores negativos antes do zero
     matriz_final = _completa_matriz_com_negativos_alt(matriz_com_positivos, dic_, qtd_criterios, criterios_decisor)
 
-    print('matriz_final', matriz_final)
+    # print('matriz_final', matriz_final)
 
-    print('\n FUNCAO _GERAR_MATRIZ_ALT - fim')
+    # print('\n FUNCAO _GERAR_MATRIZ_ALT - fim')
 
     return matriz_final
 
