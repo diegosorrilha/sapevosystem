@@ -346,9 +346,9 @@ def resultado(request, projeto_id):
         for i in range(qtd_alternativas):
             d_avaliacoes[k].append(list())
 
-    print('ZZZZZZZZ')
-    print(d_avaliacoes)
-    print('ZZZZZZZZ')
+    # print('ZZZZZZZZ')
+    # print(d_avaliacoes)
+    # print('ZZZZZZZZ')
 
     lista_criterios = []
     for c in criterios:
@@ -360,15 +360,35 @@ def resultado(request, projeto_id):
     for i in avaliacoes_alt:
         k = 'D{}'.format(i.decisor.id)
         indice = lista_criterios.index(i.criterio.codigo)
-        print('indice', indice)
+        # print('indice', indice)
         d_avaliacoes[k][indice].append(i.valor)
     
-    for k, v in d_avaliacoes.items():
+
+    # gera matrizes
+    matriz_base_alt = []
+    for i in range(qtd_criterios):
+        matriz_base_alt.append(list(range(1,qtd_criterios+1)))
+
+    for k,v in d_avaliacoes.items():
+        print(k,v)
+        # chama a funcao que recebe uma lista de avaliacoes e retorna uma matriz
+        # coloca a matriz gerada dentro do dicionario de matrizes (d_matrizes)
+        for idx, val in enumerate(v):
+            matriz_base_alt = []
+            for i in range(qtd_criterios):
+                matriz_base_alt.append(list(range(1,qtd_criterios+1)))
+
+            lista_avaliacao = val
+            matriz = _gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
+            d_matrizes[k].append(matriz)
+
+    print('AH LELEK LEK LEK LEK')
+    for k, v in d_matrizes.items():
         print(k)
         for i in v:
-            print(i)
-
-
+            for j in i:
+                print(j)
+            print('=====')
 
 
 
@@ -631,7 +651,88 @@ def _gerar_matriz(qtd_criterios, criterios_decisor):
     return matriz_final
 
 
-def _gerar_matriz_alt(qtd_criterios, criterios_decisor):
+## GERAR MATRIZES
+def _gerar_matriz_alt(qtd_alternativas, matriz_base, lista_avaliacao):
+    '''
+    Funcao que gera as matrizes das alternativas
+    Recebe <tal> e retorna <tal>
+
+    Ex.:
+    INPUT
+    OUTPUT
+
+    '''
+    matriz = matriz_base
+
+    ## posiciona zeros
+    # [0, 1, 2, 3]
+    # [1, 0, 1, 2]
+    # [1, 2, 0, 1]
+    # [1, 2, 3, 0]
+    pos_zero = 1
+    for lista in matriz:
+        lista[pos_zero-1] = 0
+        pos_zero += 1
+        # print('pos_zero', pos_zero)
+        
+
+
+    ## remove valores apos zeros
+    # [0]
+    # [1, 0]
+    # [1, 2, 0]
+    # [1, 2, 3, 0]
+    for lista in matriz:
+        zero_p = lista.index(0)
+        for i in lista[zero_p+1:]:
+            lista.remove(i)
+
+
+    ## completar com positivos
+    # [0, 1, 2, 3]
+    # [1, 0, 1, 3]
+    # [1, 2, 0, 1]
+    # [1, 2, 3, 0]
+    
+    count = 0
+    while count < qtd_alternativas:
+        for i in list(lista_avaliacao):
+            if len(matriz[count]) < 4:
+                matriz[count].append(i)
+                lista_avaliacao.remove(i)
+        count += 1
+
+
+    ## completar com negativos
+    qtd_alternativas = 4
+
+    # 1) Remover os elementos antes do 0 (zero)
+    # [0, 1, 2, 3]
+    # [0, 1, 3]
+    # [0, 1]
+    # [0]
+    pos_zero = 0
+    c = 0
+    for l in matriz:
+        for i in l[:c]:
+            l.remove(i)
+        c += 1
+
+
+    # 2) Multiplica -1 e completa as matrizes
+    # [0, 1, 2, 3]
+    # [-1, 0, 1, 3]
+    # [-1, -2, 0, 1]
+    # [-1, -3, -3, 0]
+    for l in matriz:
+        for i, v in enumerate(l[1:]):
+            if len(matriz[i+1]) < qtd_alternativas:
+                matriz[i+1].insert(0,v*-1)
+
+    return matriz
+
+
+def _gerar_matriz_alt_OLD(qtd_criterios, criterios_decisor):
     # print('\n FUNCAO _GERAR_MATRIZ_ALT - inicio')
     # print('qtd_criterios', qtd_criterios)
     # print('criterios_decisor', criterios_decisor)
