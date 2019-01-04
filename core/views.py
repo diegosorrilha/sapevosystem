@@ -382,14 +382,31 @@ def resultado(request, projeto_id):
             matriz = _gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
             d_matrizes[k].append(matriz)
 
-    print('AH LELEK LEK LEK LEK')
-    for k, v in d_matrizes.items():
-        print(k)
-        for i in v:
-            for j in i:
-                print(j)
-            print('=====')
 
+    # soma alternativas por criterio
+    avaliacoes_alternativas = []
+    for i in range(qtd_alternativas):
+        avaliacoes_alternativas.append(list())
+
+    count = 1
+    idx = 0
+
+    while count <= qtd_alternativas:
+        print('CRITERIO {}'.format(count))
+        for k, v in d_matrizes.items():
+            s = _normalizar_alternativas(v[idx])
+            print(s)
+            avaliacoes_alternativas[idx].append(s)
+        idx += 1
+        count += 1
+
+    lista_somas = []
+    for lista_elementos in avaliacoes_alternativas:
+        soma = _soma_alternativa_por_criterio(lista_elementos)
+        lista_somas.append(soma)
+
+    resultado_um = _multiplica_final(lista_somas, peso_final)
+    print(resultado_um)
 
 
     ####### Codigo antigo de alternativas #######
@@ -964,7 +981,7 @@ def _separa_alternativas(criterio, lista_elementos, idx):
     return lista_separada
 
 
-def _soma_alternativa(alternativas_ordenadas, idx):
+def _soma_alternativa_OLD(alternativas_ordenadas, idx):
     alternativas_somadas = []
     for i in alternativas_ordenadas:
         alternativas_somadas.append(sum(i[idx]))
@@ -972,7 +989,18 @@ def _soma_alternativa(alternativas_ordenadas, idx):
     return alternativas_somadas
 
 
-def _soma_alternativa_por_criterio(alternativas_ordenadas):
+def _soma_alternativa_por_criterio(lista_elementos):
+    num_elementos = len(lista_elementos[0]) -1
+    lista_somada = []
+    i = 0
+    while i <= num_elementos:
+        soma = sum([item[i] for item in lista_elementos])
+        i =  i+ 1
+        lista_somada.append(soma)
+    return lista_somada
+
+
+def _soma_alternativa_por_criterio_OLD(alternativas_ordenadas):
     alternativas_somadas = []
 
     for i in range(len(alternativas_ordenadas.values())):
@@ -1003,6 +1031,27 @@ def _multiplicar_pelo_peso(lista_primeiros_elementos ,lista_pesos):
 
 
 def _multiplica_final(lista_elementos, lista_pesos):
+    num_elementos = len(lista_pesos) 
+
+    lista_somada = []
+ 
+    i = 0
+    while i < num_elementos:
+        lista_primeiros_elementos = []
+        lista_primeiros_elementos = [item[i] for item in lista_elementos]
+        lista_multi = []
+
+        for numint, peso in enumerate(lista_pesos):
+            multi = peso * lista_primeiros_elementos[numint]
+            lista_multi.append(multi)
+
+
+        i =  i + 1
+        lista_somada.append(sum(lista_multi))
+    return lista_somada 
+
+
+def _multiplica_final_OLD(lista_elementos, lista_pesos):
     num_elementos = len(lista_elementos)
     lista_somada = []
 
