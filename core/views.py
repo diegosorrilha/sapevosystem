@@ -415,7 +415,7 @@ def resultado(request, projeto_id):
 
     while count < len(alternativas):
         resultado.append( 
-            (alternativas[count], resultado_um[count-1]) 
+            (alternativas[count], resultado_um[count]) 
         )
         count += 1
 
