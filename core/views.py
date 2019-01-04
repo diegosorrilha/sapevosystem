@@ -408,6 +408,26 @@ def resultado(request, projeto_id):
     resultado_um = _multiplica_final(lista_somas, peso_final)
     print(resultado_um)
 
+    alternativas = Alternativa.objects.filter(projeto=projeto_id)
+
+    resultado = []
+    count = 0
+
+    while count < len(alternativas):
+        resultado.append( 
+            (alternativas[count], resultado_um[count-1]) 
+        )
+        count += 1
+
+    resultado.sort(key=lambda x: x[1] ,reverse=True)
+
+
+    return render(request, template_name, {
+        'projeto_nome': projeto.nome,
+        'resultado': resultado,
+        'pesos_criterios': pesos_criterios,
+        })
+
 
     ####### Codigo antigo de alternativas #######
     #### Alternativas ####
