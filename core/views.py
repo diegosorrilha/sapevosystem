@@ -332,6 +332,7 @@ def resultado(request, projeto_id):
             pesos_criterios.append((criterio.nome, peso_final[pos_peso]))
             pos_peso += 1
 
+    ## Alternativas
     #gera dicionario de matrizes
     d_matrizes = {}
     for decisor in decisores:
@@ -343,7 +344,7 @@ def resultado(request, projeto_id):
     for decisor in decisores:
         k = 'D{}'.format(decisor.id)
         d_avaliacoes[k] = []
-        for i in range(qtd_alternativas):
+        for i in range(qtd_criterios):
             d_avaliacoes[k].append(list())
 
     # print('ZZZZZZZZ')
@@ -352,22 +353,37 @@ def resultado(request, projeto_id):
 
     lista_criterios = []
     for c in criterios:
-        lista_criterios.append(c.codigo)      
+        lista_criterios.append(c.codigo)
+
+    print(lista_criterios)
 
     # avaliacoes_alt = AvaliacaoAlternativas.objects.filter(projeto=projeto_id, decisor=14, criterio__codigo='c4').order_by('alternativas')
     avaliacoes_alt = AvaliacaoAlternativas.objects.filter(projeto=projeto_id).order_by('alternativas')
 
+    print('avaliacoes')
+    for i in avaliacoes_alt:
+        print(i)
+
+    print('d_avaliacoes')
+    print(d_avaliacoes)
+
     for i in avaliacoes_alt:
         k = 'D{}'.format(i.decisor.id)
         indice = lista_criterios.index(i.criterio.codigo)
+        print(k)
+        print('indice', indice)
+        print(d_avaliacoes[k][indice])
+        print('-----')
         # print('indice', indice)
         d_avaliacoes[k][indice].append(i.valor)
     
 
     # gera matrizes
-    matriz_base_alt = []
-    for i in range(qtd_criterios):
-        matriz_base_alt.append(list(range(1,qtd_criterios+1)))
+
+    # testar tirando isso aqui..
+    # matriz_base_alt = []
+    # for i in range(qtd_criterios):
+    #     matriz_base_alt.append(list(range(1,qtd_criterios+1)))
 
     for k,v in d_avaliacoes.items():
         print(k,v)
@@ -375,8 +391,10 @@ def resultado(request, projeto_id):
         # coloca a matriz gerada dentro do dicionario de matrizes (d_matrizes)
         for idx, val in enumerate(v):
             matriz_base_alt = []
-            for i in range(qtd_criterios):
-                matriz_base_alt.append(list(range(1,qtd_criterios+1)))
+            # for i in range(qtd_criterios):
+            #     matriz_base_alt.append(list(range(1,qtd_criterios+1)))
+            for i in range(qtd_alternativas):
+                matriz_base_alt.append(list(range(1,qtd_alternativas+1)))
 
             lista_avaliacao = val
             matriz = _gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
@@ -385,13 +403,15 @@ def resultado(request, projeto_id):
 
     # soma alternativas por criterio
     avaliacoes_alternativas = []
-    for i in range(qtd_alternativas):
+    # for i in range(qtd_alternativas):
+    for i in range(qtd_criterios):
         avaliacoes_alternativas.append(list())
 
     count = 1
     idx = 0
 
-    while count <= qtd_alternativas:
+    # while count <= qtd_alternativas:
+    while count <= qtd_criterios:
         print('CRITERIO {}'.format(count))
         for k, v in d_matrizes.items():
             s = _normalizar_alternativas(v[idx])
@@ -734,14 +754,15 @@ def _gerar_matriz_alt(qtd_alternativas, matriz_base, lista_avaliacao):
     count = 0
     while count < qtd_alternativas:
         for i in list(lista_avaliacao):
-            if len(matriz[count]) < 4:
+            # if len(matriz[count]) < 4:
+            if len(matriz[count]) < qtd_alternativas:
                 matriz[count].append(i)
                 lista_avaliacao.remove(i)
         count += 1
 
 
     ## completar com negativos
-    qtd_alternativas = 4
+    # qtd_alternativas = 4
 
     # 1) Remover os elementos antes do 0 (zero)
     # [0, 1, 2, 3]
@@ -1051,7 +1072,8 @@ def _multiplicar_pelo_peso(lista_primeiros_elementos ,lista_pesos):
 
 
 def _multiplica_final(lista_elementos, lista_pesos):
-    num_elementos = len(lista_pesos) 
+    # num_elementos = len(lista_pesos) 
+    num_elementos = len(lista_elementos[0]) 
 
     lista_somada = []
  
