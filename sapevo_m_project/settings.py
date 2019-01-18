@@ -25,7 +25,7 @@ SECRET_KEY = '@6g^=4svgho-1ai&jvl$d3&++(h*iaj7d(2d%_$9e@_nfl7l2f'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['www.sapevoweb.com']
 
 
 # Application definition
