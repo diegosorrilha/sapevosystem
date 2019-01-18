@@ -77,6 +77,7 @@ def cadastradecisores(request, projeto_id):
     template_name = 'cadastra_decisores.html'
     projeto_nome = projeto.nome
     decisores = Decisor.objects.filter(projeto=projeto_id)
+    qtd_decisores = len(decisores)
 
     if request.method == 'POST':
         decisor_form = DecisorForm(request.POST)
@@ -94,7 +95,8 @@ def cadastradecisores(request, projeto_id):
                 'decisor_form': decisor_form, 
                 'decisores': decisores, 
                 'projeto_nome': projeto_nome,
-                'projeto_id': projeto_id})
+                'projeto_id': projeto_id,
+                'qtd_decisores': qtd_decisores})
 
 
 def cadastraalternativas(request, projeto_id):
