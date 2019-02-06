@@ -9,5 +9,6 @@ admin.site.register(
         Criterio, 
         AvaliacaoCriterios,
         AvaliacaoAlternativas,
+        PageView,
     ]
 )
