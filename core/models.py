@@ -62,3 +62,7 @@ class AvaliacaoAlternativas(models.Model):
 
     def __str__(self):
         return '{} - {} - {}'.format(self.decisor, self.criterio, self.alternativas)
+
+
+class PageView(models.Model):
+    views = models.IntegerField()

@@ -1,8 +1,16 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm
-from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios, AvaliacaoAlternativas
+from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios, AvaliacaoAlternativas, PageView
 import collections
+
+
+
+# TODO: 
+# - Criar uma tabela para guardar as pageviews - OK
+# - Criar um função para incrementar o numero de pageviews e colocar em cada função que tiver uma URL
+
+
 
 def index(request):
     template_name = 'index.html'
@@ -18,14 +26,22 @@ def index(request):
     else:
         nome_projeto_form = NomeProjetoForm()
 
+    pageview = registra_pageview()
+
     return render(request, template_name, {
                 'nome_projeto_form': nome_projeto_form,
-                'projetos': projetos})
+                'projetos': projetos,
+                'pageview': pageview})
 
 
 def metodo(request):
     template_name = 'metodo.html'
-    return render(request, template_name)
+
+    pageview = registra_pageview()
+
+    return render(request, template_name, {
+        'pageview': pageview
+    })
 
 
 def projeto(request, projeto_id):
@@ -747,3 +763,17 @@ def _multiplica_final(lista_elementos, lista_pesos):
         i =  i + 1
         lista_somada.append(sum(lista_multi))
     return lista_somada
+
+
+def registra_pageview():
+    pageviews = PageView.objects.all()
+
+    if pageviews:
+        pageview = pageviews.get(id=1)
+        pageview.views += 1
+    else:
+        pageview = PageView()
+        pageview.views = 1
+    pageview.save()
+
+    return pageview.views
