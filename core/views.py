@@ -52,6 +52,20 @@ def projeto(request, projeto_id):
                 'criterios': criterios})
 
 
+def deletarprojeto(request, projeto_id):
+    redirect_page = '/'
+    params_redirect = ''
+
+    try:
+        projeto = Projeto.objects.get(id=projeto_id)
+        projeto.delete()
+    except:
+        redirect_page = 'resultado'
+        params_redirect = projeto_id
+    
+    return redirect(redirect_page, projeto_id=params_redirect)
+
+
 def editardados(request):
     nome = request.POST['nome']
     tipo_id = request.POST['tipoId'].split(':') 
@@ -412,6 +426,7 @@ def resultado(request, projeto_id):
 
     return render(request, template_name, {
         'projeto_nome': projeto.nome,
+        'projeto_id': projeto.id,
         'resultado': resultado,
         'pesos_criterios': pesos_criterios,
         })
