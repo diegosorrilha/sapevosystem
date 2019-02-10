@@ -5,13 +5,6 @@ from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriter
 import collections
 
 
-
-# TODO: 
-# - Criar uma tabela para guardar as pageviews - OK
-# - Criar um função para incrementar o numero de pageviews e colocar em cada função que tiver uma URL
-
-
-
 def index(request):
     template_name = 'index.html'
     projetos = Projeto.objects.all()
