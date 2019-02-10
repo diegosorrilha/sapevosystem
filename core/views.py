@@ -5,13 +5,6 @@ from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriter
 import collections
 
 
-
-# TODO: 
-# - Criar uma tabela para guardar as pageviews - OK
-# - Criar um função para incrementar o numero de pageviews e colocar em cada função que tiver uma URL
-
-
-
 def index(request):
     template_name = 'index.html'
     projetos = Projeto.objects.all()
@@ -57,6 +50,20 @@ def projeto(request, projeto_id):
                 'decisores': decisores,
                 'alternativas': alternativas,
                 'criterios': criterios})
+
+
+def deletarprojeto(request, projeto_id):
+    redirect_page = '/'
+    params_redirect = ''
+
+    try:
+        projeto = Projeto.objects.get(id=projeto_id)
+        projeto.delete()
+    except:
+        redirect_page = 'resultado'
+        params_redirect = projeto_id
+    
+    return redirect(redirect_page, projeto_id=params_redirect)
 
 
 def editardados(request):
@@ -419,6 +426,7 @@ def resultado(request, projeto_id):
 
     return render(request, template_name, {
         'projeto_nome': projeto.nome,
+        'projeto_id': projeto.id,
         'resultado': resultado,
         'pesos_criterios': pesos_criterios,
         })
