@@ -69,8 +69,7 @@ def deletarprojeto(request, projeto_id):
 def editardados(request):
     nome = request.POST['nome']
     tipo_id = request.POST['tipoId'].split(':') 
-    tipo = tipo_id[0]
-    _id,  = tipo_id[1]
+    tipo, _id = tipo_id[0], tipo_id[1]
     
     if tipo == 'projeto':
         projeto = Projeto.objects.get(id=_id)

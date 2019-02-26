@@ -34,7 +34,7 @@
     <tbody>
         {% for decisor in decisores %}
             <tr>
-                <td>{{decisor.nome}}</td>
+                <td><span class="edit" id="decisor:{{decisor.id}}" name="">{{decisor.nome}}</span></td>
         
             </tr>
         {% endfor %}
