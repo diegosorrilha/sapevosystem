@@ -283,21 +283,32 @@ def avaliaralternativas(request, projeto_id):
     if request.method == 'POST':
         decisor_id = request.POST['decisor_id']
         campos = request.POST.keys()
+        #PRINT
+        print('REQUEST POSTTTTT ===>>> ',request.POST)
         decisor = Decisor.objects.get(id=decisor_id)
 
         for campo in campos:
-            if campo.startswith('c') and not campo.startswith('csrf'):
-                criterio_id = campo[1]
-                criterio = Criterio.objects.get(id=criterio_id)
+            # if campo.startswith('c') and not campo.startswith('csrf'):
+                # criterio_id = campo[1]
+            if not campo.startswith('csrf') and not campo.startswith('d'):
+                if campo.split('-->')[1].startswith('c'):
+                    criterio_id = campo.split('-->')[0]
 
-                avaliacao = AvaliacaoAlternativas(
-                    projeto=projeto,
-                    decisor=decisor,
-                    criterio=criterio,
-                    alternativas=campo,
-                    valor=request.POST[campo],
-                )
-                avaliacao.save()
+                    #### PROBLEMA ESTÁ AQUI
+                    print('CAMPO',campo)
+                    print('campo1', campo[1])
+                    print('criterio_id', criterio_id)
+                    criterio = Criterio.objects.get(id=criterio_id)
+                    print('chegou aqui?')
+                    avaliacao = AvaliacaoAlternativas(
+                        projeto=projeto,
+                        decisor=decisor,
+                        criterio=criterio,
+                        alternativas=campo,
+                        valor=request.POST[campo],
+                    )
+                    avaliacao.save()
+                
 
         decisor.avaliou_alternativas = True
         decisor.save()
