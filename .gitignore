@@ -93,3 +93,4 @@ local_settings.py
 .env
 db.sqlite3
 db-backup.sqlite3
+db-backup-3-projetos-planilha-ok.sqlite3
