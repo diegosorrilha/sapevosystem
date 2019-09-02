@@ -82,7 +82,14 @@
 
 <hr>
 
-<a href="{% url 'resultado' projeto_id=projeto.id %}" class="btn btn-success btn-lg btn-block">Ver resultado</a>
+{% if projeto.avaliado %}
+    <a href="{% url 'resultado' projeto_id=projeto.id %}" class="btn btn-success btn-lg btn-block">Ver resultado</a>
+
+{% else %}
+    <a href="{% url 'avaliarcriterios' projeto_id=projeto.id %}" class="btn btn-warning btn-lg btn-block">Avaliar projeto</a>
+
+{% endif %}
+
 
 
 {% endblock %}
