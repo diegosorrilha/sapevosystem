@@ -312,6 +312,8 @@ def avaliaralternativas(request, projeto_id):
 
         decisor.avaliou_alternativas = True
         decisor.save()
+        projeto.avaliado = True
+        projeto.save()
 
         return redirect('avaliaralternativas', projeto_id)
 
@@ -325,6 +327,7 @@ def avaliaralternativas(request, projeto_id):
 
 def resultado(request, projeto_id):
     template_name = 'resultado.html'
+
     projeto_id = projeto_id
     projeto = Projeto.objects.get(id=projeto_id)
     qtd_criterios = Criterio.objects.filter(projeto=projeto_id).count()
@@ -335,13 +338,26 @@ def resultado(request, projeto_id):
     #### Criterios ####
     matrizes = []
     for decisor in decisores:
-        criterios_decisor = AvaliacaoCriterios.objects.filter(projeto=projeto_id, decisor=decisor.id)  
+        criterios_decisor = AvaliacaoCriterios.objects.filter(projeto=projeto_id, decisor=decisor.id)
+
+        # print('XXXXXXXXXXXXXXXXXXXXXXXXXX')
+        # print('decisor =>', decisor.nome)
+        # print('criterios_decisor =>', criterios_decisor)
+        # print('criterios_decisor VALOR =>', criterios_decisor[0].valor)
+        # print('qtd_criterios =>', qtd_criterios)
+        # print('XXXXXXXXXXXXXXXXXXXXXXXXXX')
+
         matriz = _gerar_matriz(qtd_criterios, criterios_decisor)
         matrizes.append(matriz)
 
     # calcular pesos dos decisores
     pesos_decisores = []
     for matriz in matrizes:
+        print('>>>>>>>>>>>>>>>')
+        print('matriz =>', matriz)
+        print('>>>>>>>>>>>>>>>')
+
+
         peso_matriz = _normalizar(matriz)
         pesos_decisores.append(peso_matriz)
 
@@ -619,6 +635,10 @@ def _normalizar(lista_elementos):
         lista_normalizada.append(regular)
     
     for i in lista_normalizada:
+        # >>>>> aqui que cria a lista
+        print('>>>>>>>>>>>>>>>')
+        print('i in lista_normalizada =>', i)
+        print('>>>>>>>>>>>>>>>')
         if i > 0:
             lista_sem_zero.append(i)
 
@@ -626,6 +646,11 @@ def _normalizar(lista_elementos):
         if elemento_normalizado > 0:
             lista_final_normalizada.append(elemento_normalizado)
         else:
+            # >>>>> erro aqui
+            # min() arg is an empty sequence
+            print('>>>>>>>>>>>>>>>')
+            print('lista_sem_zero =>', lista_sem_zero)
+            print('>>>>>>>>>>>>>>>')
             menor_zero = min(lista_sem_zero)
             lista_final_normalizada.append(menor_zero*0.01)
 
