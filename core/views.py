@@ -112,8 +112,10 @@ def cadastradecisores(request, projeto_id):
             _inclui_decisor_no_projeto(projeto, decisor_novo)
             decisor_novo.projeto = projeto
             decisor_novo.save()
+
             logger.info('Projeto: {} | ID: {}'.format(projeto, projeto.id))
             logger.info('Decisor cadastrado: {} | ID {}'.format(decisor_novo, decisor_novo.id))
+
         return redirect('cadastradecisores', projeto_id=projeto.id)
 
     else:
@@ -152,6 +154,9 @@ def cadastraalternativas(request, projeto_id):
             alternativa_nova.projeto = projeto
             alternativa_nova.codigo = codigo
             alternativa_nova.save()
+
+            logger.info('Projeto: {} | ID: {}'.format(projeto, projeto.id))
+            logger.info('Alternativa cadastrada: {} | ID {}'.format(alternativa_nova, alternativa_nova.id))
         
         return redirect('cadastraalternativas', projeto_id=projeto.id)
 
@@ -190,6 +195,9 @@ def cadastracriterios(request, projeto_id):
             criterio_novo.projeto = projeto
             criterio_novo.codigo = codigo
             criterio_novo.save()
+
+            logger.info('Projeto: {} | ID: {}'.format(projeto, projeto.id))
+            logger.info('Critério cadastrado: {} | ID {}'.format(criterio_novo, criterio_novo.id))
 
             return redirect('cadastracriterios', projeto_id=projeto.id)
     
@@ -236,6 +244,8 @@ def avaliarcriterios(request, projeto_id):
         campos = request.POST.keys()
         decisor = Decisor.objects.get(id=decisor_id)
 
+        logger.info('Projeto: {} | ID: {}'.format(projeto, projeto.id))
+
         for campo in campos:
             if campo.startswith('c') and not campo.startswith('csrf'):
                 avaliacao = AvaliacaoCriterios(
@@ -246,8 +256,12 @@ def avaliarcriterios(request, projeto_id):
                 )
                 avaliacao.save()
 
+                logger.info('Avaliação de critério cadastrada: {} | ID {}'.format(avaliacao, avaliacao.id))
+
         decisor.avaliou_criterios = True
         decisor.save()
+
+        logger.info('Decisor atualizado: {} | ID {}'.format(decisor, decisor.id))
 
         return redirect('avaliarcriterios', projeto_id)
 
@@ -293,6 +307,8 @@ def avaliaralternativas(request, projeto_id):
         print('REQUEST POSTTTTT ===>>> ',request.POST)
         decisor = Decisor.objects.get(id=decisor_id)
 
+        logger.info('Projeto: {} | ID: {}'.format(projeto, projeto.id))
+
         for campo in campos:
             # if campo.startswith('c') and not campo.startswith('csrf'):
                 # criterio_id = campo[1]
@@ -314,12 +330,16 @@ def avaliaralternativas(request, projeto_id):
                         valor=request.POST[campo],
                     )
                     avaliacao.save()
+
+                    logger.info('Avaliação de alternativa cadastrada: {} | ID {}'.format(avaliacao, avaliacao.id))
                 
 
         decisor.avaliou_alternativas = True
         decisor.save()
         projeto.avaliado = True
         projeto.save()
+        logger.info('Decisor atualizado: {} | ID {}'.format(decisor, decisor.id))
+        logger.info('Projeto atualizado: {} | ID {}'.format(projeto, projeto.id))
 
         return redirect('avaliaralternativas', projeto_id)
 
@@ -341,6 +361,12 @@ def resultado(request, projeto_id):
     decisores = projeto.decisores.all()
     criterios = Criterio.objects.filter(projeto=projeto_id)
 
+    logger.info('Projeto: {} | ID: {}'.format(projeto, projeto.id))
+
+    # process.criterios import CriteriosProcess
+    # CriteriosProcess().gerar_matrizes()
+    # CriteriosProcess().calcular_pesos()
+
     #### Criterios ####
     matrizes = []
     for decisor in decisores:
@@ -356,19 +382,25 @@ def resultado(request, projeto_id):
         matriz = _gerar_matriz(qtd_criterios, criterios_decisor)
         matrizes.append(matriz)
 
+
+    logger.info('Matrizes geradas: {}'.format(matrizes))
+
     # calcular pesos dos decisores
+    # TODO Criar funcao separada CALCULAR PESOS <<<<<
     pesos_decisores = []
     for matriz in matrizes:
         print('>>>>>>>>>>>>>>>')
         print('matriz =>', matriz)
         print('>>>>>>>>>>>>>>>')
 
-
         peso_matriz = _normalizar(matriz)
         pesos_decisores.append(peso_matriz)
 
+    logger.info('Pesos decisores com matrizes normalizadas: {}'.format(pesos_decisores))
+
     # calcular o peso final 
     peso_final = _peso_criterios(pesos_decisores)
+    logger.info('Pesos final de critérios calculado: {}'.format(peso_final))
 
     # cria tupla de criterio e peso para renderizar
     pesos_criterios = []
@@ -380,8 +412,16 @@ def resultado(request, projeto_id):
             pesos_criterios.append((criterio.nome, peso_final[pos_peso]))
             pos_peso += 1
 
+    logger.info('Pesos por criterios: {}'.format(pesos_criterios))
+
 
     #### Alternativas ####
+    # TODO Criar funcao separada NOME <<<<<
+    # process.alternativas import AlternativasProcess
+    # CriteriosProcess().soma_alternativas_por_criterio()
+    # CriteriosProcess().calcular_pesos()
+
+
     # gera dicionario de matrizes
     d_matrizes = {}
     for decisor in decisores:
@@ -400,12 +440,17 @@ def resultado(request, projeto_id):
     for c in criterios:
         lista_criterios.append(c.codigo)
 
+    logger.info('Lista de criterios: {}'.format(lista_criterios))
+
     avaliacoes_alt = AvaliacaoAlternativas.objects.filter(projeto=projeto_id).order_by('alternativas')
+    logger.info('Avaliacao Alternativas : {}'.format(avaliacoes_alt))
 
     for i in avaliacoes_alt:
         k = 'D{}'.format(i.decisor.id)
         indice = lista_criterios.index(i.criterio.codigo)
         d_avaliacoes[k][indice].append(i.valor)
+
+    logger.info('Avaliações de alternativas: {}'.format(d_avaliacoes))
     
 
     # gera matrizes
@@ -419,6 +464,7 @@ def resultado(request, projeto_id):
             matriz = _gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
             d_matrizes[k].append(matriz)
 
+    logger.info('Matrizes de Avaliações de alternativas: {}'.format(d_avaliacoes))
 
     # soma alternativas por criterio
     avaliacoes_alternativas = []
@@ -441,7 +487,11 @@ def resultado(request, projeto_id):
         soma = _soma_alternativa_por_criterio(lista_elementos)
         lista_somas.append(soma)
 
+    logger.info('Alternativas por critério: {}'.format(avaliacoes_alternativas))
+
     resultado_um = _multiplica_final(lista_somas, peso_final)
+
+    logger.info('Alternativas multiplicadas pelo peso: {}'.format(resultado_um))
 
     alternativas = Alternativa.objects.filter(projeto=projeto_id)
 
@@ -454,8 +504,9 @@ def resultado(request, projeto_id):
         )
         count += 1
 
-    resultado.sort(key=lambda x: x[1] ,reverse=True)
+    resultado.sort(key=lambda x: x[1], reverse=True)
 
+    logger.info('Resultado: {}'.format(resultado))
 
     return render(request, template_name, {
         'projeto_nome': projeto.nome,
@@ -480,6 +531,7 @@ def _gerar_matriz(qtd_criterios, criterios_decisor):
     matriz_base = []
     for i in range(qtd_criterios):
         matriz_base.append(list(range(1,qtd_criterios+1)))
+    logger.info('Gerar matriz base: {}'.format(matriz_base))
 
     ### 2 - posicionar zeros na matriz base
     pos_zero = 1
@@ -487,12 +539,15 @@ def _gerar_matriz(qtd_criterios, criterios_decisor):
         lista[pos_zero-1] = 0
         pos_zero +=1
 
+    logger.info('Zeros posicionados na matriz: {}'.format(matriz_base))
+
     ### 3 - gerar nova matriz com valores positivos após o zero
     # remove os elementos após o 0
     for lista in matriz_base:
         zero_p = lista.index(0)
         for i in lista[zero_p+1:]:
             lista.remove(i)
+
 
     # separa os criterios em um dicionario
     dic_ = collections.OrderedDict()
@@ -507,8 +562,12 @@ def _gerar_matriz(qtd_criterios, criterios_decisor):
     # completa a matriz com valores positivos
     matriz_com_positivos = _completa_matriz_com_positivos(matriz_base, dic_, qtd_criterios)
 
+    logger.info('Matriz com valores positivos: {}'.format(matriz_com_positivos))
+
     ### 4 - gerar nova matriz com valores negativos antes do zero
     matriz_final = _completa_matriz_com_negativos(matriz_com_positivos, dic_, qtd_criterios, criterios_decisor)
+
+    logger.info('Matriz final: {}'.format(matriz_final))
 
     return matriz_final
 
@@ -536,6 +595,8 @@ def _gerar_matriz_alt(qtd_alternativas, matriz_base, lista_avaliacao):
         lista[pos_zero-1] = 0
         pos_zero += 1
 
+    logger.info('Zeros posicionados na matriz: {}'.format(matriz))
+
     ## remove valores apos zeros
     # [0]
     # [1, 0]
@@ -562,6 +623,7 @@ def _gerar_matriz_alt(qtd_alternativas, matriz_base, lista_avaliacao):
                 lista_avaliacao.remove(i)
         count += 1
 
+    logger.info('Matriz com valores positivos: {}'.format(matriz))
 
     ## completar com negativos
     # 1) Remover os elementos antes do 0 (zero)
@@ -586,6 +648,8 @@ def _gerar_matriz_alt(qtd_alternativas, matriz_base, lista_avaliacao):
         for i, v in enumerate(l[1:]):
             if len(matriz[i+1]) < qtd_alternativas:
                 matriz[i+1].insert(0,v*-1)
+
+    logger.info('Matriz final: {}'.format(matriz))
 
     return matriz
 
