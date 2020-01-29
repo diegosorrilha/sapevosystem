@@ -1,8 +1,12 @@
+import logging
+
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm
 from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios, AvaliacaoAlternativas, PageView
 import collections
+
+logger = logging.getLogger(__name__)
 
 
 def index(request):
@@ -108,6 +112,8 @@ def cadastradecisores(request, projeto_id):
             _inclui_decisor_no_projeto(projeto, decisor_novo)
             decisor_novo.projeto = projeto
             decisor_novo.save()
+            logger.info('Projeto: {} | ID: {}'.format(projeto, projeto.id))
+            logger.info('Decisor cadastrado: {} | ID {}'.format(decisor_novo, decisor_novo.id))
         return redirect('cadastradecisores', projeto_id=projeto.id)
 
     else:
@@ -373,6 +379,7 @@ def resultado(request, projeto_id):
         for criterio in criterios:
             pesos_criterios.append((criterio.nome, peso_final[pos_peso]))
             pos_peso += 1
+
 
     #### Alternativas ####
     # gera dicionario de matrizes
