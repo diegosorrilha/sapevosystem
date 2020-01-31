@@ -383,7 +383,7 @@ def resultado(request, projeto_id):
 
         # matriz = _gerar_matriz(qtd_criterios, criterios_decisor)
         # TODO: Trocar o nome da funcao _gerar_matriz para gerar_matriz
-        matriz = Matriz()._gerar_matriz(qtd_criterios, criterios_decisor)
+        matriz = Matriz().gerar_matriz(qtd_criterios, criterios_decisor)
         matrizes.append(matriz)
 
 

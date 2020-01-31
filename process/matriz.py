@@ -26,9 +26,7 @@ class Matriz:
 
         return matriz_n
 
-    # TODO: Trocar o nome da funcao _gerar_matriz para gerar_matriz
-    # TODO: views.py linha: 385
-    def _gerar_matriz(self, qtd_criterios, criterios_decisor):
+    def gerar_matriz(self, qtd_criterios, criterios_decisor):
         ### 1 - gerar matriz base
         matriz_base = []
         for i in range(qtd_criterios):
