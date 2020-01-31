@@ -426,7 +426,6 @@ def resultado(request, projeto_id):
     # CriteriosProcess().calcular_pesos()
 
 
-
     # gera dicionario de matrizes
     d_matrizes = {}
     for decisor in decisores:
@@ -463,10 +462,11 @@ def resultado(request, projeto_id):
         for idx, val in enumerate(v):
             matriz_base_alt = []
             for i in range(qtd_alternativas):
-                matriz_base_alt.append(list(range(1,qtd_alternativas+1)))
+                matriz_base_alt.append(list(range(1, qtd_alternativas+1)))
 
             lista_avaliacao = val
-            matriz = _gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
+            # matriz = _gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
+            matriz = Matriz().gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
             d_matrizes[k].append(matriz)
 
     logger.info('Matrizes de Avaliações de alternativas: {}'.format(d_avaliacoes))
@@ -580,86 +580,6 @@ def _inclui_decisor_no_projeto(projeto, decisor):
 #     return matriz_final
 
 
-## GERAR MATRIZES
-def _gerar_matriz_alt(qtd_alternativas, matriz_base, lista_avaliacao):
-    '''
-    Funcao que gera as matrizes das alternativas
-    Recebe <tal> e retorna <tal>
-
-    Ex.:
-    INPUT
-    OUTPUT
-
-    '''
-    matriz = matriz_base
-
-    ## posiciona zeros
-    # [0, 1, 2, 3]
-    # [1, 0, 1, 2]
-    # [1, 2, 0, 1]
-    # [1, 2, 3, 0]
-    pos_zero = 1
-    for lista in matriz:
-        lista[pos_zero-1] = 0
-        pos_zero += 1
-
-    logger.info('Zeros posicionados na matriz: {}'.format(matriz))
-
-    ## remove valores apos zeros
-    # [0]
-    # [1, 0]
-    # [1, 2, 0]
-    # [1, 2, 3, 0]
-    for lista in matriz:
-        zero_p = lista.index(0)
-        for i in lista[zero_p+1:]:
-            lista.remove(i)
-
-
-    ## completar com positivos
-    # [0, 1, 2, 3]
-    # [1, 0, 1, 3]
-    # [1, 2, 0, 1]
-    # [1, 2, 3, 0]
-    
-    count = 0
-    while count < qtd_alternativas:
-        for i in list(lista_avaliacao):
-            # if len(matriz[count]) < 4:
-            if len(matriz[count]) < qtd_alternativas:
-                matriz[count].append(i)
-                lista_avaliacao.remove(i)
-        count += 1
-
-    logger.info('Matriz com valores positivos: {}'.format(matriz))
-
-    ## completar com negativos
-    # 1) Remover os elementos antes do 0 (zero)
-    # [0, 1, 2, 3]
-    # [0, 1, 3]
-    # [0, 1]
-    # [0]
-    pos_zero = 0
-    c = 0
-    for l in matriz:
-        for i in l[:c]:
-            l.remove(i)
-        c += 1
-
-
-    # 2) Multiplica -1 e completa as matrizes
-    # [0, 1, 2, 3]
-    # [-1, 0, 1, 3]
-    # [-1, -2, 0, 1]
-    # [-1, -3, -3, 0]
-    for l in matriz:
-        for i, v in enumerate(l[1:]):
-            if len(matriz[i+1]) < qtd_alternativas:
-                matriz[i+1].insert(0,v*-1)
-
-    logger.info('Matriz final: {}'.format(matriz))
-
-    return matriz
 
 # passado para processo
 # def _completa_matriz_com_positivos(matriz, dic, qtd_criterios):
@@ -685,16 +605,16 @@ def _gerar_matriz_alt(qtd_alternativas, matriz_base, lista_avaliacao):
 
 
 # Matriz._completa_matriz_com_negativos_alt
-def _completa_matriz_com_negativos_alt(matriz_n, dic, qtd_criterios, criterios_decisor):
-    criterios = {k:v for (v, k) in enumerate(dic.keys())}
-
-    for i in criterios_decisor:
-        k=i.alternativas[-2:]
-        indice = criterios[k]
-        el = i.valor * -1
-        matriz_n[indice].insert(0, el)
-
-    return matriz_n
+# def _completa_matriz_com_negativos_alt(matriz_n, dic, qtd_criterios, criterios_decisor):
+#     criterios = {k:v for (v, k) in enumerate(dic.keys())}
+#
+#     for i in criterios_decisor:
+#         k=i.alternativas[-2:]
+#         indice = criterios[k]
+#         el = i.valor * -1
+#         matriz_n[indice].insert(0, el)
+#
+#     return matriz_n
 
 
 # Calculo._normalizar
@@ -851,7 +771,7 @@ def _soma_alternativa_por_criterio(lista_elementos):
         lista_somada.append(soma)
     return lista_somada
 
-# Calculo
+
 def _separa_primeiros_elementos(lista_elementos, idx):
     
     lista_separada = []

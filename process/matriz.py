@@ -69,3 +69,82 @@ class Matriz:
         logger.info('Matriz final: {}'.format(matriz_final))
 
         return matriz_final
+
+    def gerar_matriz_alt(self, qtd_alternativas, matriz_base, lista_avaliacao):
+        '''
+        Funcao que gera as matrizes das alternativas
+        Recebe <tal> e retorna <tal>
+
+        Ex.:
+        INPUT
+        OUTPUT
+
+        '''
+        matriz = matriz_base
+
+        ## posiciona zeros
+        # [0, 1, 2, 3]
+        # [1, 0, 1, 2]
+        # [1, 2, 0, 1]
+        # [1, 2, 3, 0]
+        pos_zero = 1
+        for lista in matriz:
+            lista[pos_zero - 1] = 0
+            pos_zero += 1
+
+        logger.info('Zeros posicionados na matriz: {}'.format(matriz))
+
+        ## remove valores apos zeros
+        # [0]
+        # [1, 0]
+        # [1, 2, 0]
+        # [1, 2, 3, 0]
+        for lista in matriz:
+            zero_p = lista.index(0)
+            for i in lista[zero_p + 1:]:
+                lista.remove(i)
+
+        ## completar com positivos
+        # [0, 1, 2, 3]
+        # [1, 0, 1, 3]
+        # [1, 2, 0, 1]
+        # [1, 2, 3, 0]
+
+        count = 0
+        while count < qtd_alternativas:
+            for i in list(lista_avaliacao):
+                # if len(matriz[count]) < 4:
+                if len(matriz[count]) < qtd_alternativas:
+                    matriz[count].append(i)
+                    lista_avaliacao.remove(i)
+            count += 1
+
+        logger.info('Matriz com valores positivos: {}'.format(matriz))
+
+        ## completar com negativos
+        # 1) Remover os elementos antes do 0 (zero)
+        # [0, 1, 2, 3]
+        # [0, 1, 3]
+        # [0, 1]
+        # [0]
+        pos_zero = 0
+        c = 0
+        for l in matriz:
+            for i in l[:c]:
+                l.remove(i)
+            c += 1
+
+        # 2) Multiplica -1 e completa as matrizes
+        # [0, 1, 2, 3]
+        # [-1, 0, 1, 3]
+        # [-1, -2, 0, 1]
+        # [-1, -3, -3, 0]
+        for l in matriz:
+            for i, v in enumerate(l[1:]):
+                if len(matriz[i + 1]) < qtd_alternativas:
+                    matriz[i + 1].insert(0, v * -1)
+
+        logger.info('Matriz final: {}'.format(matriz))
+
+        return matriz
+
