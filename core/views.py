@@ -444,57 +444,12 @@ def _gerar_matriz_alternativas(
     return d_matrizes
 
 
-def _calcular_resultado_alternativas(d_matrizes):
-    # return resultado
-    pass
-
-
-def resultado(request, projeto_id):
-    template_name = 'resultado.html'
-
-    projeto_id = projeto_id
-    projeto = Projeto.objects.get(id=projeto_id)
-    qtd_criterios = Criterio.objects.filter(projeto=projeto_id).count()
-    qtd_alternativas = Alternativa.objects.filter(projeto=projeto_id).count()
-    decisores = projeto.decisores.all()
-    criterios = Criterio.objects.filter(projeto=projeto_id)
-
-    logger.info('Projeto: {} | ID: {}'.format(projeto, projeto.id))
-
-    # GERAR MATRIZ DE CRITERIOS | gerar_matrizes_criterios()
-    # CALCULAR PESO DOS CRITERIOS | calcular_peso_criterios()
-    # GERAR MATRIZ DE ALTERNATIVAS | gerar_matriz_alternativas()
-    # CALCULAR RESULTADO DAS ALTERNATIVAS | calcular_resultado_alternativas()
-
-    # TODO: #################################################
-    # TODO: 1) SEPARAR LOGICA
-    # TODO: 2) SEPARAR CALCULOS EM PROCESSO DE CALCULO
-
-    # TODO: SEPARAR LOGICA CONFORME ABAIXO:
-    # matrizes = _gerar_matrizes_criterios(decisores, qtd_criterios, projeto_id)
-    # pesos_criterios = _calcular_peso_criterios(matrizes)
-
-    # d_matrizes = _gerar_matriz_alternativas() # d_matrizes > matrizes_alt
-    # resultado = _calcular_resultado_alternativas(d_matrizes)
-
-    # TODO: #################################################
-
-    #### Criterios ####
-    matrizes = _gerar_matrizes_criterios(decisores, qtd_criterios, projeto_id)
-
-    #### Calcular pesos dos criterios ####
-    pesos_criterios, peso_final = _calcular_peso_criterios(matrizes, criterios)
-
-    #### Alternativas ####
-    d_matrizes = _gerar_matriz_alternativas(
-        decisores,
-        criterios,
+def _calcular_resultado_alternativas(
+        d_matrizes,
         qtd_criterios,
-        projeto_id,
-        qtd_alternativas
-    )  # d_matrizes > matrizes_alt
-
-    # TODO <INICIO> CALCULAR RESULTADO DAS ALTERNATIVAS #CALCULO
+        peso_final,
+        projeto_id
+        ):
     # soma alternativas por criterio
     avaliacoes_alternativas = []
     for i in range(qtd_criterios):
@@ -528,15 +483,51 @@ def resultado(request, projeto_id):
     count = 0
 
     while count < len(alternativas):
-        resultado.append( 
-            (alternativas[count], resultado_um[count]) 
+        resultado.append(
+            (alternativas[count], resultado_um[count])
         )
         count += 1
 
     resultado.sort(key=lambda x: x[1], reverse=True)
 
     logger.info('Resultado: {}'.format(resultado))
-    # TODO <INICIO> CALCULAR RESULTADO DAS ALTERNATIVAS #CALCULO
+
+    return resultado
+
+
+def resultado(request, projeto_id):
+    template_name = 'resultado.html'
+
+    projeto_id = projeto_id
+    projeto = Projeto.objects.get(id=projeto_id)
+    qtd_criterios = Criterio.objects.filter(projeto=projeto_id).count()
+    qtd_alternativas = Alternativa.objects.filter(projeto=projeto_id).count()
+    decisores = projeto.decisores.all()
+    criterios = Criterio.objects.filter(projeto=projeto_id)
+
+    logger.info('Projeto: {} | ID: {}'.format(projeto, projeto.id))
+
+    #### Criterios ####
+    matrizes = _gerar_matrizes_criterios(decisores, qtd_criterios, projeto_id)
+
+    #### Calcular pesos dos criterios ####
+    pesos_criterios, peso_final = _calcular_peso_criterios(matrizes, criterios)
+
+    #### Alternativas ####
+    d_matrizes = _gerar_matriz_alternativas(
+        decisores,
+        criterios,
+        qtd_criterios,
+        projeto_id,
+        qtd_alternativas
+    )  # d_matrizes > matrizes_alt
+
+    resultado = _calcular_resultado_alternativas(
+        d_matrizes,
+        qtd_criterios,
+        peso_final,
+        projeto_id
+    )
 
     return render(request, template_name, {
         'projeto_nome': projeto.nome,
