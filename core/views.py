@@ -389,9 +389,60 @@ def _calcular_peso_criterios(matrizes, criterios):
     logger.info('Pesos por criterios: {}'.format(pesos_criterios))
     return pesos_criterios, peso_final
 
-def _gerar_matriz_alternativas():
-    # return d_matrizes
-    pass
+
+def _gerar_matriz_alternativas(
+        decisores,
+        criterios,
+        qtd_criterios,
+        projeto_id,
+        qtd_alternativas
+    ):
+    # gera dicionario de matrizes
+    d_matrizes = {}
+    for decisor in decisores:
+        k = 'D{}'.format(decisor.id)
+        d_matrizes[k] = []
+
+    # gera dicionario de avaliacoes
+    d_avaliacoes = {}
+    for decisor in decisores:
+        k = 'D{}'.format(decisor.id)
+        d_avaliacoes[k] = []
+        for i in range(qtd_criterios):
+            d_avaliacoes[k].append(list())
+
+    lista_criterios = []
+    for c in criterios:
+        lista_criterios.append(c.codigo)
+
+    logger.info('Lista de criterios: {}'.format(lista_criterios))
+
+    avaliacoes_alt = AvaliacaoAlternativas.objects.filter(projeto=projeto_id).order_by('alternativas')
+    logger.info('Avaliacao Alternativas : {}'.format(avaliacoes_alt))
+
+    for i in avaliacoes_alt:
+        k = 'D{}'.format(i.decisor.id)
+        indice = lista_criterios.index(i.criterio.codigo)
+        d_avaliacoes[k][indice].append(i.valor)
+
+    logger.info('Avaliações de alternativas: {}'.format(d_avaliacoes))
+
+    # gera matrizes
+    for k, v in d_avaliacoes.items():
+        for idx, val in enumerate(v):
+            matriz_base_alt = []
+            for i in range(qtd_alternativas):
+                matriz_base_alt.append(list(range(1, qtd_alternativas + 1)))
+
+            lista_avaliacao = val
+            # matriz = _gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
+            matriz = Matriz().gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
+            d_matrizes[k].append(matriz)
+
+    logger.info('Matrizes de Avaliações de alternativas: {}'.format(d_avaliacoes))
+
+    return d_matrizes
+
 
 def _calcular_resultado_alternativas(d_matrizes):
     # return resultado
@@ -435,53 +486,13 @@ def resultado(request, projeto_id):
     pesos_criterios, peso_final = _calcular_peso_criterios(matrizes, criterios)
 
     #### Alternativas ####
-
-    # TODO <INICIO> GERAR MATRIZ DE ALTERNATIVAS #MATRIZ
-    # gera dicionario de matrizes
-    d_matrizes = {}
-    for decisor in decisores:
-        k = 'D{}'.format(decisor.id)
-        d_matrizes[k] = []
-
-    # gera dicionario de avaliacoes
-    d_avaliacoes = {}
-    for decisor in decisores:
-        k = 'D{}'.format(decisor.id)
-        d_avaliacoes[k] = []
-        for i in range(qtd_criterios):
-            d_avaliacoes[k].append(list())
-
-    lista_criterios = []
-    for c in criterios:
-        lista_criterios.append(c.codigo)
-
-    logger.info('Lista de criterios: {}'.format(lista_criterios))
-
-    avaliacoes_alt = AvaliacaoAlternativas.objects.filter(projeto=projeto_id).order_by('alternativas')
-    logger.info('Avaliacao Alternativas : {}'.format(avaliacoes_alt))
-
-    for i in avaliacoes_alt:
-        k = 'D{}'.format(i.decisor.id)
-        indice = lista_criterios.index(i.criterio.codigo)
-        d_avaliacoes[k][indice].append(i.valor)
-
-    logger.info('Avaliações de alternativas: {}'.format(d_avaliacoes))
-    
-
-    # gera matrizes
-    for k,v in d_avaliacoes.items():
-        for idx, val in enumerate(v):
-            matriz_base_alt = []
-            for i in range(qtd_alternativas):
-                matriz_base_alt.append(list(range(1, qtd_alternativas+1)))
-
-            lista_avaliacao = val
-            # matriz = _gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
-            matriz = Matriz().gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
-            d_matrizes[k].append(matriz)
-
-    logger.info('Matrizes de Avaliações de alternativas: {}'.format(d_avaliacoes))
-    # TODO <FIM> GERAR MATRIZ DE ALTERNATIVAS #MATRIZ
+    d_matrizes = _gerar_matriz_alternativas(
+        decisores,
+        criterios,
+        qtd_criterios,
+        projeto_id,
+        qtd_alternativas
+    )  # d_matrizes > matrizes_alt
 
     # TODO <INICIO> CALCULAR RESULTADO DAS ALTERNATIVAS #CALCULO
     # soma alternativas por criterio
