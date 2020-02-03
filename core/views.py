@@ -445,7 +445,7 @@ def _gerar_matriz_alternativas(
 
 
 def _calcular_resultado_alternativas(
-        d_matrizes,
+        matrizes,
         qtd_criterios,
         peso_final,
         projeto_id
@@ -460,7 +460,7 @@ def _calcular_resultado_alternativas(
 
     # while count <= qtd_alternativas:
     while count <= qtd_criterios:
-        for k, v in d_matrizes.items():
+        for k, v in matrizes.items():
             s = _normalizar_alternativas(v[idx])
             avaliacoes_alternativas[idx].append(s)
         idx += 1
