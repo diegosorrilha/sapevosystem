@@ -305,8 +305,6 @@ def avaliaralternativas(request, projeto_id):
     if request.method == 'POST':
         decisor_id = request.POST['decisor_id']
         campos = request.POST.keys()
-        #PRINT
-        print('REQUEST POSTTTTT ===>>> ',request.POST)
         decisor = Decisor.objects.get(id=decisor_id)
 
         logger.info('Projeto: {} | ID: {}'.format(projeto, projeto.id))
@@ -319,11 +317,11 @@ def avaliaralternativas(request, projeto_id):
                     criterio_id = campo.split('-->')[0]
 
                     #### PROBLEMA ESTÁ AQUI
-                    print('CAMPO',campo)
-                    print('campo1', campo[1])
-                    print('criterio_id', criterio_id)
-                    criterio = Criterio.objects.get(id=criterio_id)
-                    print('chegou aqui?')
+                    # print('CAMPO',campo)
+                    # print('campo1', campo[1])
+                    # print('criterio_id', criterio_id)
+                    # criterio = Criterio.objects.get(id=criterio_id)
+                    # print('chegou aqui?')
                     avaliacao = AvaliacaoAlternativas(
                         projeto=projeto,
                         decisor=decisor,
@@ -652,10 +650,6 @@ def _normalizar(lista_elementos):
         lista_normalizada.append(regular)
     
     for i in lista_normalizada:
-        # >>>>> aqui que cria a lista
-        print('>>>>>>>>>>>>>>>')
-        print('i in lista_normalizada =>', i)
-        print('>>>>>>>>>>>>>>>')
         if i > 0:
             lista_sem_zero.append(i)
 
@@ -663,11 +657,6 @@ def _normalizar(lista_elementos):
         if elemento_normalizado > 0:
             lista_final_normalizada.append(elemento_normalizado)
         else:
-            # >>>>> erro aqui
-            # min() arg is an empty sequence
-            print('>>>>>>>>>>>>>>>')
-            print('lista_sem_zero =>', lista_sem_zero)
-            print('>>>>>>>>>>>>>>>')
             menor_zero = min(lista_sem_zero)
             lista_final_normalizada.append(menor_zero*0.01)
 
