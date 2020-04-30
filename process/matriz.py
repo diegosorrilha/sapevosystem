@@ -147,4 +147,3 @@ class Matriz:
         logger.info('Matriz final: {}'.format(matriz))
 
         return matriz
-

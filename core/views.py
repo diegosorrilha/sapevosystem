@@ -361,7 +361,7 @@ def _gerar_matrizes_criterios(decisores, qtd_criterios, projeto_id):
     logger.info('Matrizes geradas: {}'.format(matrizes))
     return matrizes
 
-
+# Calculo
 def _calcular_peso_criterios(matrizes, criterios):
     pesos_decisores = []
     for matriz in matrizes:
@@ -508,19 +508,19 @@ def resultado(request, projeto_id):
     #### Criterios ####
     matrizes = _gerar_matrizes_criterios(decisores, qtd_criterios, projeto_id)
 
-    #### Calcular pesos dos criterios ####
+    #### Calcular pesos dos criterios #### # Calculo
     pesos_criterios, peso_final = _calcular_peso_criterios(matrizes, criterios)
 
     #### Alternativas ####
-    d_matrizes = _gerar_matriz_alternativas(
+    d_matrizes = _gerar_matriz_alternativas(  # d_matrizes > matrizes_alt
         decisores,
         criterios,
         qtd_criterios,
         projeto_id,
         qtd_alternativas
-    )  # d_matrizes > matrizes_alt
+    )
 
-    resultado = _calcular_resultado_alternativas(
+    resultado = _calcular_resultado_alternativas(  # Calculo
         d_matrizes,
         qtd_criterios,
         peso_final,
@@ -776,7 +776,7 @@ def _soma_alternativa_por_criterio(lista_elementos):
         lista_somada.append(soma)
     return lista_somada
 
-
+# Calculo
 def _separa_primeiros_elementos(lista_elementos, idx):
     
     lista_separada = []
@@ -784,7 +784,7 @@ def _separa_primeiros_elementos(lista_elementos, idx):
         
     return lista_separada
 
-
+# Calculo
 def _multiplicar_pelo_peso(lista_primeiros_elementos ,lista_pesos):
     lista_multi = []
     for numint, peso in enumerate(lista_pesos):
