@@ -6,6 +6,7 @@ from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioFo
 from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios, AvaliacaoAlternativas, PageView
 import collections
 
+from services.alternativa_service import AlternativaService
 from services.calculo import Calculo
 from services.matriz import Matriz
 
@@ -416,6 +417,7 @@ def _gerar_matriz_alternativas(
 
     logger.info('Lista de criterios: {}'.format(lista_criterios))
 
+    # a partir daqui
     avaliacoes_alt = AvaliacaoAlternativas.objects.filter(projeto=projeto_id).order_by('alternativas')
     logger.info('Avaliacao Alternativas : {}'.format(avaliacoes_alt))
 
@@ -426,21 +428,11 @@ def _gerar_matriz_alternativas(
 
     logger.info('Avaliações de alternativas: {}'.format(d_avaliacoes))
 
-    # gera matrizes
-    for k, v in d_avaliacoes.items():
-        for idx, val in enumerate(v):
-            matriz_base_alt = []
-            for i in range(qtd_alternativas):
-                matriz_base_alt.append(list(range(1, qtd_alternativas + 1)))
+    # gera matrizes ################
+    #TODO: Talvez colocar mais coisa dessa dentro do service: 420
+    matrizes = AlternativaService().gerar_matrizes(d_matrizes, d_avaliacoes, qtd_alternativas)
 
-            lista_avaliacao = val
-            # matriz = _gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
-            matriz = Matriz().gerar_matriz_alt(qtd_alternativas, matriz_base_alt, lista_avaliacao)
-            d_matrizes[k].append(matriz)
-
-    logger.info('Matrizes de Avaliações de alternativas: {}'.format(d_avaliacoes))
-
-    return d_matrizes
+    return matrizes
 
 
 def _calcular_resultado_alternativas(
