@@ -6,8 +6,8 @@ from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioFo
 from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios, AvaliacaoAlternativas, PageView
 import collections
 
-from process.calculo import Calculo
-from process.matriz import Matriz
+from services.calculo import Calculo
+from services.matriz import Matriz
 
 logger = logging.getLogger(__name__)
 
