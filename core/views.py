@@ -6,6 +6,7 @@ from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioFo
 from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios, AvaliacaoAlternativas, PageView
 import collections
 
+from process.calculo import Calculo
 from process.matriz import Matriz
 
 logger = logging.getLogger(__name__)
@@ -320,7 +321,7 @@ def avaliaralternativas(request, projeto_id):
                     # print('CAMPO',campo)
                     # print('campo1', campo[1])
                     # print('criterio_id', criterio_id)
-                    # criterio = Criterio.objects.get(id=criterio_id)
+                    criterio = Criterio.objects.get(id=criterio_id)
                     # print('chegou aqui?')
                     avaliacao = AvaliacaoAlternativas(
                         projeto=projeto,
@@ -371,7 +372,7 @@ def _calcular_peso_criterios(matrizes, criterios):
     logger.info('Pesos decisores com matrizes normalizadas: {}'.format(pesos_decisores))
 
     # calcular o peso final
-    peso_final = _peso_criterios(pesos_decisores)
+    peso_final = Calculo().get_peso_criterios(pesos_decisores)
     logger.info('Pesos final de critérios calculado: {}'.format(peso_final))
 
     # cria tupla de criterio e peso para renderizar
@@ -663,40 +664,40 @@ def _normalizar(lista_elementos):
     return lista_final_normalizada
 
 
-# Calculo._separa_elementos
-def _separa_elementos(lista_elementos, idx):
-    '''
-    Funcao que separa lista de listas pelo indice.
+# Calculo._separa_elementos ja separado
+# def _separa_elementos(lista_elementos, idx):
+#     '''
+#     Funcao que separa lista de listas pelo indice.
+#
+#     Ex.:
+#     INPUT:
+#     lista_de_listas = [
+#         [0.3333, 1, 2, 3],
+#         [0.3333, 1, 2, 3],
+#         [0.3333, 1, 2, 3]
+#     ]
+#
+#     _separa_elementos(lista_de_listas, 0)
+#
+#     OUTPUT:
+#     [0.33333, 0.33333, 0.33333]
+#     '''
+#     lista_separada = []
+#     for l in lista_elementos:
+#         lista_separada.append(l[idx])
+#     return lista_separada
 
-    Ex.:
-    INPUT:
-    lista_de_listas = [
-        [0.3333, 1, 2, 3], 
-        [0.3333, 1, 2, 3], 
-        [0.3333, 1, 2, 3]
-    ]
-
-    _separa_elementos(lista_de_listas, 0)
-
-    OUTPUT:
-    [0.33333, 0.33333, 0.33333]
-    '''
-    lista_separada = []
-    for l in lista_elementos:
-        lista_separada.append(l[idx])
-    return lista_separada
-
-# Calculo._peso_criterios
-def _peso_criterios(lista_elementos):
-    num_elementos = len(lista_elementos[0])
-
-    soma_pesos = []
-    for idx in range(num_elementos):
-        lista_temp = []
-        lista_temp = _separa_elementos(lista_elementos, idx)
-        soma_pesos.append(sum(lista_temp))
-
-    return soma_pesos
+# Calculo._peso_criterios # ja separado
+# def _peso_criterios(lista_elementos):
+#     num_elementos = len(lista_elementos[0])
+#
+#     soma_pesos = []
+#     for idx in range(num_elementos):
+#         lista_temp = []
+#         lista_temp = _separa_elementos(lista_elementos, idx)
+#         soma_pesos.append(sum(lista_temp))
+#
+#     return soma_pesos
 
 # Matriz._gerar_combinacoes_criterios
 def _gerar_combinacoes_criterios(criterios):
