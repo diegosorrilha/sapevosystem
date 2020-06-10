@@ -104,3 +104,83 @@ class AlternativaService:
         logger.info('Matrizes de Avaliações de alternativas: {}'.format(d_avaliacoes))
 
         return d_matrizes
+
+    def _normalizar_alternativas(self, lista_elementos):
+        lista_dos_somados = []
+        lista_normalizada = []
+
+        for elemento in lista_elementos:
+            soma = sum(elemento)
+            lista_dos_somados.append(soma)
+
+        for elemento_da_soma in lista_dos_somados:
+            maior, menor = max(lista_dos_somados), min(lista_dos_somados)
+            if maior == menor:
+                regular = 0
+            else:
+                regular = ((elemento_da_soma - menor) / (maior - menor))
+
+            lista_normalizada.append(regular)
+
+        return lista_normalizada
+
+    def _soma_alternativa_por_criterio(self, lista_elementos):
+        num_elementos = len(lista_elementos[0]) - 1
+        lista_somada = []
+        i = 0
+        while i <= num_elementos:
+            soma = sum([item[i] for item in lista_elementos])
+            i = i + 1
+            lista_somada.append(soma)
+        return lista_somada
+
+
+    def _multiplica_final(self, lista_elementos, lista_pesos):
+        num_elementos = len(lista_elementos[0])
+
+        lista_somada = []
+
+        i = 0
+        while i < num_elementos:
+            lista_primeiros_elementos = []
+            lista_primeiros_elementos = [item[i] for item in lista_elementos]
+            lista_multi = []
+
+            for numint, peso in enumerate(lista_pesos):
+                multi = peso * lista_primeiros_elementos[numint]
+                lista_multi.append(multi)
+
+            i = i + 1
+            lista_somada.append(sum(lista_multi))
+        return lista_somada
+
+    def calcular_resultado(self, matrizes, qtd_criterios, peso_final):
+        # 1) Soma alternativas por criterio
+        avaliacoes_alternativas = []
+        for i in range(qtd_criterios):
+            avaliacoes_alternativas.append(list())
+
+        count = 1
+        idx = 0
+
+        # while count <= qtd_alternativas:
+        while count <= qtd_criterios:
+            for k, v in matrizes.items():
+                s = self._normalizar_alternativas(v[idx])
+                avaliacoes_alternativas[idx].append(s)
+            idx += 1
+            count += 1
+
+        lista_somas = []
+        for lista_elementos in avaliacoes_alternativas:
+            soma = self._soma_alternativa_por_criterio(lista_elementos)
+            lista_somas.append(soma)
+
+        logger.info('Alternativas por critério: {}'.format(avaliacoes_alternativas))
+
+        # 2) Multiplica pelo peso
+        resultado_um = self._multiplica_final(lista_somas, peso_final)
+
+        logger.info('Alternativas multiplicadas pelo peso: {}'.format(resultado_um))
+
+        return resultado_um

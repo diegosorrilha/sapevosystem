@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from core.forms import DecisorForm, NomeProjetoForm, AlternativaForm, CriterioForm
 from core.models import Projeto, Decisor, Alternativa, Criterio, AvaliacaoCriterios, AvaliacaoAlternativas, PageView
-import collections
 
 from services.alternativa_service import AlternativaService
 from services.calculo import Calculo
@@ -429,11 +428,9 @@ def _gerar_matriz_alternativas(
     logger.info('Avaliações de alternativas: {}'.format(d_avaliacoes))
 
     # gera matrizes ################
-    #TODO: Talvez colocar mais coisa dessa dentro do service: 420
     matrizes = AlternativaService().gerar_matrizes(d_matrizes, d_avaliacoes, qtd_alternativas)
 
     return matrizes
-
 
 def _calcular_resultado_alternativas(
         matrizes,
@@ -441,32 +438,7 @@ def _calcular_resultado_alternativas(
         peso_final,
         projeto_id
         ):
-    # soma alternativas por criterio
-    avaliacoes_alternativas = []
-    for i in range(qtd_criterios):
-        avaliacoes_alternativas.append(list())
-
-    count = 1
-    idx = 0
-
-    # while count <= qtd_alternativas:
-    while count <= qtd_criterios:
-        for k, v in matrizes.items():
-            s = _normalizar_alternativas(v[idx])
-            avaliacoes_alternativas[idx].append(s)
-        idx += 1
-        count += 1
-
-    lista_somas = []
-    for lista_elementos in avaliacoes_alternativas:
-        soma = _soma_alternativa_por_criterio(lista_elementos)
-        lista_somas.append(soma)
-
-    logger.info('Alternativas por critério: {}'.format(avaliacoes_alternativas))
-
-    resultado_um = _multiplica_final(lista_somas, peso_final)
-
-    logger.info('Alternativas multiplicadas pelo peso: {}'.format(resultado_um))
+    resultado_um = AlternativaService().calcular_resultado(matrizes, qtd_criterios, peso_final)
 
     alternativas = Alternativa.objects.filter(projeto=projeto_id)
 
@@ -537,93 +509,6 @@ def _inclui_decisor_no_projeto(projeto, decisor):
     projeto.decisores.add(decisor)
     return
 
-
-
-# utils.gerar_matriz
-
-# def _gerar_matriz(qtd_criterios, criterios_decisor):
-#     ### 1 - gerar matriz base
-#     matriz_base = []
-#     for i in range(qtd_criterios):
-#         matriz_base.append(list(range(1,qtd_criterios+1)))
-#     logger.info('Gerar matriz base: {}'.format(matriz_base))
-#
-#     ### 2 - posicionar zeros na matriz base
-#     pos_zero = 1
-#     for lista in matriz_base:
-#         lista[pos_zero-1] = 0
-#         pos_zero +=1
-#
-#     logger.info('Zeros posicionados na matriz: {}'.format(matriz_base))
-#
-#     ### 3 - gerar nova matriz com valores positivos após o zero
-#     # remove os elementos após o 0
-#     for lista in matriz_base:
-#         zero_p = lista.index(0)
-#         for i in lista[zero_p+1:]:
-#             lista.remove(i)
-#
-#
-#     # separa os criterios em um dicionario
-#     dic_ = collections.OrderedDict()
-#     for i in range(1,qtd_criterios+1):
-#         key = 'c{}'.format(i)
-#         dic_[key] = []
-#
-#     for i in criterios_decisor:
-#         k = i.criterios[:2]
-#         dic_[k].append(i.valor)
-#
-#     # completa a matriz com valores positivos
-#     matriz_com_positivos = _completa_matriz_com_positivos(matriz_base, dic_, qtd_criterios)
-#
-#     logger.info('Matriz com valores positivos: {}'.format(matriz_com_positivos))
-#
-#     ### 4 - gerar nova matriz com valores negativos antes do zero
-#     matriz_final = _completa_matriz_com_negativos(matriz_com_positivos, dic_, qtd_criterios, criterios_decisor)
-#
-#     logger.info('Matriz final: {}'.format(matriz_final))
-#
-#     return matriz_final
-
-
-
-# passado para processo
-# def _completa_matriz_com_positivos(matriz, dic, qtd_criterios):
-#     matriz_nova = []
-#     for i in matriz:
-#         l = []
-#         for j in dic.values():
-#             if len(matriz_nova) < qtd_criterios:
-#                 l = i+j
-#                 matriz_nova.append(l)
-#     return matriz_nova
-#
-# def _completa_matriz_com_negativos(matriz_n, dic, qtd_criterios, criterios_decisor):
-#     criterios = {k:v for (v, k) in enumerate(dic.keys())}
-#
-#     for i in criterios_decisor:
-#         k=i.criterios[-2:]
-#         indice = criterios[k]
-#         el = i.valor * -1
-#         matriz_n[indice].insert(0, el)
-#
-#     return matriz_n
-
-
-# Matriz._completa_matriz_com_negativos_alt
-# def _completa_matriz_com_negativos_alt(matriz_n, dic, qtd_criterios, criterios_decisor):
-#     criterios = {k:v for (v, k) in enumerate(dic.keys())}
-#
-#     for i in criterios_decisor:
-#         k=i.alternativas[-2:]
-#         indice = criterios[k]
-#         el = i.valor * -1
-#         matriz_n[indice].insert(0, el)
-#
-#     return matriz_n
-
-
 # Calculo._normalizar
 def _normalizar(lista_elementos):
     lista_final_normalizada = []
@@ -655,41 +540,6 @@ def _normalizar(lista_elementos):
 
     return lista_final_normalizada
 
-
-# Calculo._separa_elementos ja separado
-# def _separa_elementos(lista_elementos, idx):
-#     '''
-#     Funcao que separa lista de listas pelo indice.
-#
-#     Ex.:
-#     INPUT:
-#     lista_de_listas = [
-#         [0.3333, 1, 2, 3],
-#         [0.3333, 1, 2, 3],
-#         [0.3333, 1, 2, 3]
-#     ]
-#
-#     _separa_elementos(lista_de_listas, 0)
-#
-#     OUTPUT:
-#     [0.33333, 0.33333, 0.33333]
-#     '''
-#     lista_separada = []
-#     for l in lista_elementos:
-#         lista_separada.append(l[idx])
-#     return lista_separada
-
-# Calculo._peso_criterios # ja separado
-# def _peso_criterios(lista_elementos):
-#     num_elementos = len(lista_elementos[0])
-#
-#     soma_pesos = []
-#     for idx in range(num_elementos):
-#         lista_temp = []
-#         lista_temp = _separa_elementos(lista_elementos, idx)
-#         soma_pesos.append(sum(lista_temp))
-#
-#     return soma_pesos
 
 # Matriz._gerar_combinacoes_criterios
 def _gerar_combinacoes_criterios(criterios):
@@ -729,26 +579,6 @@ def _gerar_combinacoes_criterios(criterios):
     return combinacoes
 
 # Calculo
-def _normalizar_alternativas(lista_elementos):
-    lista_dos_somados = []
-    lista_normalizada = []
-    
-    for elemento in lista_elementos:
-        soma = sum(elemento)
-        lista_dos_somados.append(soma)
-    
-    for elemento_da_soma in lista_dos_somados:
-        maior , menor = max(lista_dos_somados), min(lista_dos_somados)
-        if maior == menor :
-            regular = 0
-        else:
-            regular = ((elemento_da_soma - menor)/(maior - menor))
-
-        lista_normalizada.append(regular)
-
-    return lista_normalizada
-
-# Calculo
 def _separa_alternativas(criterio, lista_elementos, idx):
     num_el = len(lista_elementos[0])
     lista_separada = []
@@ -758,16 +588,6 @@ def _separa_alternativas(criterio, lista_elementos, idx):
             lista_separada.append(item[idx])
     return lista_separada
 
-# Calculo
-def _soma_alternativa_por_criterio(lista_elementos):
-    num_elementos = len(lista_elementos[0]) -1
-    lista_somada = []
-    i = 0
-    while i <= num_elementos:
-        soma = sum([item[i] for item in lista_elementos])
-        i =  i+ 1
-        lista_somada.append(soma)
-    return lista_somada
 
 # Calculo
 def _separa_primeiros_elementos(lista_elementos, idx):
@@ -786,27 +606,6 @@ def _multiplicar_pelo_peso(lista_primeiros_elementos ,lista_pesos):
         lista_multi.append(multi)
 
     return lista_multi
-
-# Calculo
-def _multiplica_final(lista_elementos, lista_pesos):
-    num_elementos = len(lista_elementos[0]) 
-
-    lista_somada = []
- 
-    i = 0
-    while i < num_elementos:
-        lista_primeiros_elementos = []
-        lista_primeiros_elementos = [item[i] for item in lista_elementos]
-        lista_multi = []
-
-        for numint, peso in enumerate(lista_pesos):
-            multi = peso * lista_primeiros_elementos[numint]
-            lista_multi.append(multi)
-
-        i =  i + 1
-        lista_somada.append(sum(lista_multi))
-    return lista_somada
-
 
 def registra_pageview():
     pageviews = PageView.objects.all()
