@@ -229,7 +229,19 @@ def avaliarcriterios(request, projeto_id):
     criterios_cod = Criterio.objects.filter(projeto=projeto_id).values_list('codigo', flat=True)
 
     if not decisores:
-        return redirect('avaliaralternativas', projeto_id)
+        qtd_criterios = Criterio.objects.filter(projeto=projeto_id).count()  # precisa de 2 queries? len(criterios)
+        decisores_all = projeto.decisores.all()
+        criterios = Criterio.objects.filter(projeto=projeto_id)
+        matrizes = _gerar_matrizes_criterios(decisores_all, qtd_criterios, projeto_id)
+
+        pesos_criterios, peso_final = _calcular_peso_criterios(matrizes, criterios)
+
+        template_peso_criterios = 'mostrar_pesos_criterios.html'
+
+        return render(request, template_peso_criterios, {
+            'pesos_criterios': pesos_criterios,
+            'projeto': projeto,
+        })
 
     combinacoes_criterios = _gerar_combinacoes_criterios(criterios_cod)
     

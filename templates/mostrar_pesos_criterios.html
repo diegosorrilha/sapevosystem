@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block container %}
+
+<h1>Resultado dos Pesos dos Critérios - Projeto {{projeto.nome}}</h1>
+
+<h3>Pesos</h3>
+{% for peso_criterio in pesos_criterios %}
+    <p>Critério - <strong>{{peso_criterio.0}}</strong> - {{peso_criterio.1 }}</p>
+
+{% endfor %}
+
+<hr>
+
+<a href="{% url 'avaliaralternativas' projeto_id=projeto.id %}" class="btn btn-success btn-lg btn-block">Avaliar Alternativas</a>
+<a href="{% url 'deletarprojeto' projeto_id=projeto.id %}" class="btn btn-danger btn-lg btn-block">Deletar projeto</a>
+
+{% endblock %}
