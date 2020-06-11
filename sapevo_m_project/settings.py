@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
-
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -25,7 +24,7 @@ SECRET_KEY = '@6g^=4svgho-1ai&jvl$d3&++(h*iaj7d(2d%_$9e@_nfl7l2f'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['www.sapevoweb.com', 'localhost']
+ALLOWED_HOSTS = ['www.sapevoweb.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -119,3 +118,35 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# LOGGING
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '[ %(levelname)s ] %(name)s > %(funcName)s() | message: %(message)s'
+        },
+        'file': {
+            'format': '%(asctime)s [ %(levelname)s ] %(name)s > %(funcName)s() | message: %(message)s'
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'file',
+            'filename': '{}/sapevo.log'.format(BASE_DIR)
+        }
+    },
+    'loggers': {
+        '': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'file']
+        }
+    }
+}
