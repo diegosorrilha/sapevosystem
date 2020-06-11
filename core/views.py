@@ -66,10 +66,13 @@ def deletarprojeto(request, projeto_id):
     try:
         projeto = Projeto.objects.get(id=projeto_id)
         projeto.delete()
+        logger.info('Projeto deletado com sucesso | projeto: {}'.format(projeto))
+
     except:
         redirect_page = 'resultado'
         params_redirect = projeto_id
-    
+        logger.error('Projeto deletado com sucesso | ID: {}'.format(projeto_id))
+
     return redirect(redirect_page, projeto_id=params_redirect)
 
 
@@ -80,7 +83,7 @@ def editardados(request):
     
     if tipo == 'projeto':
         projeto = Projeto.objects.get(id=_id)
-        projeto.nome = _nome
+        projeto.nome = nome
         projeto.save()
 
     elif tipo == 'decisor':

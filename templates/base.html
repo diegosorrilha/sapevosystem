@@ -213,5 +213,17 @@
         })
     </script>
 
+    <script type="text/javascript">
+        function confirmar_delecao() {
+            confirmed = confirm(
+                'Tem certeza que deseja deletar o projeto: "{{projeto.nome}}"? \n\n Clique em OK para confirmar.\n'
+        );
+
+            if (confirmed) {
+                window.location.href = "/deletarprojeto/{{projeto.id}}";
+            }
+        }
+    </script>
+
     {% block custom_js %}{% endblock %}
 </body>
