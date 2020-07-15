@@ -232,9 +232,9 @@ def avaliarcriterios(request, projeto_id):
         qtd_criterios = Criterio.objects.filter(projeto=projeto_id).count()  # precisa de 2 queries? len(criterios)
         decisores_all = projeto.decisores.all()
         criterios = Criterio.objects.filter(projeto=projeto_id)
-        matrizes = _gerar_matrizes_criterios(decisores_all, qtd_criterios, projeto_id)
 
-        pesos_criterios, peso_final = _calcular_peso_criterios(matrizes, criterios)
+        pesos_criterios, peso_final = _calcular_peso_criterios(decisores_all, qtd_criterios, projeto_id,
+                                                               criterios)
 
         template_peso_criterios = 'mostrar_pesos_criterios.html'
 
@@ -349,7 +349,6 @@ def avaliaralternativas(request, projeto_id):
 
                     logger.info('Avaliação de alternativa cadastrada: {} | ID {}'.format(avaliacao, avaliacao.id))
                 
-
         decisor.avaliou_alternativas = True
         decisor.save()
         projeto.avaliado = True
@@ -377,8 +376,10 @@ def _gerar_matrizes_criterios(decisores, qtd_criterios, projeto_id):
     logger.info('Matrizes geradas: {}'.format(matrizes))
     return matrizes
 
-# Calculo
-def _calcular_peso_criterios(matrizes, criterios):
+# Calculo > Passar para classe Criterio
+def _calcular_peso_criterios(decisores, qtd_criterios, projeto_id, criterios):
+    matrizes = _gerar_matrizes_criterios(decisores, qtd_criterios, projeto_id)
+
     pesos_decisores = []
     for matriz in matrizes:
         peso_matriz = _normalizar(matriz)
@@ -485,11 +486,7 @@ def resultado(request, projeto_id):
 
     logger.info('Projeto: {} | ID: {}'.format(projeto, projeto.id))
 
-    #### Criterios ####
-    matrizes = _gerar_matrizes_criterios(decisores, qtd_criterios, projeto_id)
-
-    #### Calcular pesos dos criterios #### # Calculo
-    pesos_criterios, peso_final = _calcular_peso_criterios(matrizes, criterios)
+    pesos_criterios, peso_final = _calcular_peso_criterios(decisores, qtd_criterios, projeto_id, criterios)
 
     #### Alternativas ####
     d_matrizes = _gerar_matriz_alternativas(  # d_matrizes > matrizes_alt
