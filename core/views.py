@@ -229,7 +229,8 @@ def avaliarcriterios(request, projeto_id):
     criterios_cod = Criterio.objects.filter(projeto=projeto_id).values_list('codigo', flat=True)
 
     if not decisores:
-        qtd_criterios = Criterio.objects.filter(projeto=projeto_id).count()  # precisa de 2 queries? len(criterios)
+        qtd_criterios = len(criterios_cod)
+
         decisores_all = projeto.decisores.all()
         criterios = Criterio.objects.filter(projeto=projeto_id)
 
@@ -348,7 +349,7 @@ def avaliaralternativas(request, projeto_id):
                     avaliacao.save()
 
                     logger.info('Avaliação de alternativa cadastrada: {} | ID {}'.format(avaliacao, avaliacao.id))
-                
+
         decisor.avaliou_alternativas = True
         decisor.save()
         projeto.avaliado = True
